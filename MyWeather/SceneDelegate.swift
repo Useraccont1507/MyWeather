@@ -19,13 +19,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     let window = UIWindow(windowScene: scene)
     var nav = UINavigationController()
-    if Storage.shared.isFirstEnter() {
+    //if Storage.shared.isFirstEnter() {
       nav = UINavigationController(rootViewController: FirstViewController())
-    } else {
-      nav = UINavigationController(rootViewController: CitiesListViewController())
-    }
-    
-    window.backgroundColor = .white
+    //} else {
+     // nav = UINavigationController(rootViewController: CitiesListViewController())
+    //}
+
     window.rootViewController = nav
     window.makeKeyAndVisible()
     

@@ -9,3 +9,6 @@
 "main_greeting" = "Welcome to Weather app";
 "secondary_greeting" = "Choose often visited cities";
 "select_button_text" = "Select";
+"searchVC_title" = "Search";
+"cancel_button" = "Cancel";
+"searchbar_placeholder" = "City name or post index";

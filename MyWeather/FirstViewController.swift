@@ -16,6 +16,7 @@ class FirstViewController: UIViewController {
   
   override func viewDidLoad() {
     super.viewDidLoad()
+    view.backgroundColor = .systemBackground
     setupSecondaryGreetingLabel(secondaryGreetingLabel)
     setupMainGreetingLabel(mainGreetingLabel)
     setupCityImageView(cityImageView)
@@ -87,7 +88,7 @@ class FirstViewController: UIViewController {
   }
   
   @objc private func moveToSeacrh() {
-    //TODO: make SearchViewController and link to it
+    self.present(SearchViewController(), animated: true)
   }
 }
 

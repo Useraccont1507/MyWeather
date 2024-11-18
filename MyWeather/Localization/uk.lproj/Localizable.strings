@@ -9,3 +9,6 @@
 "main_greeting" = "Вас вітає погода";
 "secondary_greeting" = "Оберіть часто відвідувані місця";
 "select_button_text" = "Обрати";
+"searchVC_title" = "Пошук";
+"cancel_button" = "Скасувати";
+"searchbar_placeholder" = "Назва міста або поштовий індекс";
