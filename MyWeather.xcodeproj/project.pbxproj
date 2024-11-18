@@ -6,8 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		F42D7D922CEB9A8A0044F53B /* Storage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42D7D912CEB9A890044F53B /* Storage.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		F42D7D792CEB9A3A0044F53B /* MyWeather.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyWeather.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F42D7D912CEB9A890044F53B /* Storage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storage.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -45,6 +50,7 @@
 		F42D7D702CEB9A390044F53B = {
 			isa = PBXGroup;
 			children = (
+				F42D7D912CEB9A890044F53B /* Storage.swift */,
 				F42D7D7B2CEB9A3A0044F53B /* MyWeather */,
 				F42D7D7A2CEB9A3A0044F53B /* Products */,
 			);
@@ -132,6 +138,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F42D7D922CEB9A8A0044F53B /* Storage.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
