@@ -1,0 +1,11 @@
+/* 
+  Localizable.strings
+  MyWeather
+
+  Created by Illia Verezei on 18.11.2024.
+  
+*/
+
+"main_greeting" = "Welcome to Weather app";
+"secondary_greeting" = "Choose often visited cities";
+"select_button_text" = "Select";

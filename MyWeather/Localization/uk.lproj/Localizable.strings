@@ -1,0 +1,11 @@
+/* 
+  Localizable.strings
+  MyWeather
+
+  Created by Illia Verezei on 18.11.2024.
+  
+*/
+
+"main_greeting" = "Вас вітає погода";
+"secondary_greeting" = "Оберіть часто відвідувані місця";
+"select_button_text" = "Обрати";
