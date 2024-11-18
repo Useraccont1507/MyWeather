@@ -22,7 +22,7 @@ class FirstViewController: UIViewController {
     setupBeginButton(beginButton)
   }
   
-  func setupMainGreetingLabel(_ label: UILabel) {
+  private func setupMainGreetingLabel(_ label: UILabel) {
     label.text = "main_greeting".localized
     label.font = .systemFont(ofSize: 32, weight: .bold)
     label.textColor = .black
@@ -38,7 +38,7 @@ class FirstViewController: UIViewController {
     ])
   }
   
-  func setupSecondaryGreetingLabel(_ label: UILabel) {
+  private func setupSecondaryGreetingLabel(_ label: UILabel) {
     label.text = "secondary_greeting".localized
     label.font = .systemFont(ofSize: 20, weight: .semibold)
     label.textColor = .black
@@ -55,7 +55,7 @@ class FirstViewController: UIViewController {
     ])
   }
   
-  func setupCityImageView(_ imageView: UIImageView) {
+  private func setupCityImageView(_ imageView: UIImageView) {
     imageView.contentMode = .scaleToFill
     imageView.image = UIImage(named: "CityImage")
     imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -69,7 +69,7 @@ class FirstViewController: UIViewController {
     ])
   }
   
-  func setupBeginButton(_ button: UIButton) {
+  private func setupBeginButton(_ button: UIButton) {
     button.setTitle("select_button_text".localized, for: .normal)
     button.setTitleColor(.white, for: .normal)
     button.backgroundColor = .systemBlue
