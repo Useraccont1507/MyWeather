@@ -59,5 +59,7 @@ class SearchViewController: UIViewController {
 }
 
 extension SearchViewController: UISearchBarDelegate {
-  //TODO: delegates
+  func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+    //TODO: table view reload
+  }
 }
