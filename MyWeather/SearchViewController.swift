@@ -11,6 +11,7 @@ class SearchViewController: UIViewController {
   
   lazy private var toolBar = UIToolbar()
   lazy private var searchBar = UISearchBar()
+  //TODO: lazy private var resultTableView
   
   override func viewDidLoad() {
     super.viewDidLoad()
