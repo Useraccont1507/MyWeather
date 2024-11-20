@@ -32,4 +32,29 @@ class WebManager {
       }.resume()
     }
   }
+  
+  func fetchTempNow(for coordinates: CityCoordinates, completion: @escaping (Result<WeatherNow, Error>) -> ()) {
+    let currentLocale = Locale.current
+    var lang = "en"
+    if currentLocale.languageCode == "uk" {
+      lang = "ua"
+    }
+    
+    if let url = URL(string: "https://api.openweathermap.org/data/2.5/weather?lat=" + coordinates.lat + "&lon=" + coordinates.lon + "&lang=" + lang + "&appid=" + apiKey + "&units=metric") {
+      URLSession.shared.dataTask(with: url) { data, _, error in
+        if let error = error {
+          completion(.failure(error))
+          return
+        }
+        if let respData = data {
+          do {
+            let weatherNow = try JSONDecoder().decode(WeatherNow.self, from: respData)
+            completion(.success(weatherNow))
+          } catch {
+            completion(.failure(error))
+          }
+        }
+      }.resume()
+    }
+  }
 }

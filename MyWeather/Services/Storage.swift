@@ -31,6 +31,7 @@ class Storage {
     var arrayToSave: [[String: String]] = []
     for citiesCoordinate in citiesCoordinates {
       var dict: [String: String] = [:]
+      dict["name"] = citiesCoordinate.name
       dict["lat"] = citiesCoordinate.lat
       dict["lon"] = citiesCoordinate.lon
       arrayToSave.append(dict)
@@ -42,8 +43,8 @@ class Storage {
     guard let arrayFromStorage = storage.array(forKey: Keys.cityCoordinates.rawValue) as? [[String: String]] else { return [] }
     var arrayToReturn: [CityCoordinates] = []
     for dict in arrayFromStorage {
-      if let lat = dict["lat"], let lon = dict["lon"] {
-        arrayToReturn.append(CityCoordinates(lat: lat, lon: lon))
+      if let name = dict["name"], let lat = dict["lat"], let lon = dict["lon"] {
+        arrayToReturn.append(CityCoordinates(name: name, lat: lat, lon: lon))
       }
     }
     return arrayToReturn
