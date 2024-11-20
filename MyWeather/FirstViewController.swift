@@ -88,7 +88,14 @@ class FirstViewController: UIViewController {
   }
   
   @objc private func moveToSeacrh() {
-    self.present(SearchViewController(), animated: true)
+    let vc = SearchViewController()
+    vc.delegateFirstViewController = self
+    self.present(vc, animated: true)
   }
 }
 
+extension FirstViewController: PushFromFisrtViewControllerDelegate {
+  func pushFromSelf() {
+    navigationController?.pushViewController(CitiesListViewController(), animated: true)
+  }
+}
