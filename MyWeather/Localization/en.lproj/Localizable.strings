@@ -12,3 +12,7 @@
 "searchVC_title" = "Search";
 "cancel_button" = "Cancel";
 "searchbar_placeholder" = "City name or post index";
+"search_alert_title" = "Adding";
+"search_alert_message1" = "Do you want to add ";
+"search_alert_message2" = " to favorites places?";
+"cancel" = "cancel";

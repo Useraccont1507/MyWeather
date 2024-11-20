@@ -12,3 +12,7 @@
 "searchVC_title" = "Пошук";
 "cancel_button" = "Скасувати";
 "searchbar_placeholder" = "Назва міста або поштовий індекс";
+"search_alert_title" = "Додавання";
+"search_alert_message1" = "Ви бажаєто додати ";
+"search_alert_message2" = " до вибраних місць?";
+"cancel" = "cкасувати";
