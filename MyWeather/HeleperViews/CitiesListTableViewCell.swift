@@ -11,11 +11,10 @@ class CitiesListTableViewCell: UITableViewCell {
   
   private var coordinates: CityCoordinates?
   
-  lazy private var roundedRectangleView = UIView()
+  lazy private var roundedRectangleView = UIImageView()
   lazy private var cityLabel = UILabel()
   lazy private var weahterDescpitionLabel = UILabel()
   lazy private var tempLabel = UILabel()
-  lazy private var feelsLikeTempLabel = UILabel()
   
   override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
     super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -40,8 +39,8 @@ class CitiesListTableViewCell: UITableViewCell {
     // Configure the view for the selected state
   }
   
-  private func setupRoundedRectangleView(_ rectangle: UIView) {
-    rectangle.backgroundColor = .blue
+  private func setupRoundedRectangleView(_ rectangle: UIImageView) {
+    rectangle.backgroundColor = .gray
     rectangle.layer.cornerRadius = 24
     rectangle.layer.shadowColor = UIColor.black.cgColor
     rectangle.layer.shadowOpacity = 0.25
@@ -76,7 +75,7 @@ class CitiesListTableViewCell: UITableViewCell {
   }
   
   private func setupTempLabel(_ label: UILabel) {
-    label.text = "15°"
+    label.text = "--°"
     label.font = .systemFont(ofSize: 40, weight: .regular)
     label.textColor = .systemBackground
     label.textAlignment = .right
@@ -92,7 +91,7 @@ class CitiesListTableViewCell: UITableViewCell {
   }
   
   private func setupWeahterDescpitionLabel(_ label: UILabel) {
-    label.text = "Хмарно"
+    label.text = "--"
     label.font = .systemFont(ofSize: 13, weight: .regular)
     label.textColor = .systemBackground
     label.textAlignment = .right
@@ -103,7 +102,7 @@ class CitiesListTableViewCell: UITableViewCell {
     NSLayoutConstraint.activate([
       label.trailingAnchor.constraint(equalTo: roundedRectangleView.trailingAnchor, constant: -16),
       label.topAnchor.constraint(equalTo: tempLabel.bottomAnchor),
-      label.leadingAnchor.constraint(equalTo: tempLabel.leadingAnchor, constant: 28),
+      label.leadingAnchor.constraint(equalTo: tempLabel.leadingAnchor, constant: -48),
     ])
   }
   
@@ -121,8 +120,8 @@ class CitiesListTableViewCell: UITableViewCell {
           switch result {
           case .success(let success):
             self.tempLabel.text = String(Int(success.main.temp.rounded())) + "°"
-            self.feelsLikeTempLabel.text = String(success.main.feelsLike ?? 0) + "°"
             self.weahterDescpitionLabel.text = success.weather.first?.description
+            self.roundedRectangleView.image = BackgroundManager().getBackgroundSmall(sunrise: success.sys.sunrise, sunset: success.sys.sunset, weatherCode: success.weather.first!.id)
           case .failure(let failure):
             print(failure)
           }

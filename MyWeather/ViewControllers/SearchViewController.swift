@@ -10,6 +10,7 @@ import UIKit
 class SearchViewController: UIViewController {
   
   weak var delegateFirstViewController: PushFromFisrtViewControllerDelegate?
+  weak var delegateReloadCities: ReloadCitiesTableViewControllerDelegate?
   
   private var searchResultForTableView: [CityElement] = []
   
@@ -82,7 +83,6 @@ class SearchViewController: UIViewController {
 extension SearchViewController: UISearchBarDelegate {
   func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
     resultTableView.reloadData()
-    print("table view reloaded")
     WebManager().fetchCityCoordinates(for: searchText) { result in
       switch result {
       case .success(let success):
@@ -117,8 +117,10 @@ extension SearchViewController: UITableViewDelegate {
     let cancelAction = UIAlertAction(title: "cancel".localized, style: .cancel)
     let action = UIAlertAction(title: "OK", style: .default) { _ in
       CitiesCoordinatesModel.shared.addCityCoordinatesToArray(self.searchResultForTableView[indexPath.row])
+      Storage.shared.saveCityCoordinates(CitiesCoordinatesModel.shared.getAllCitiesCoordinates())
       self.dissmissViewController()
       self.delegateFirstViewController?.pushFromSelf()
+      self.delegateReloadCities?.reload()
     }
     alertController.addAction(action)
     alertController.addAction(cancelAction)

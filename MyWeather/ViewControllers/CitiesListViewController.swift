@@ -9,27 +9,28 @@ import UIKit
 
 class CitiesListViewController: UIViewController {
   
-  var cities: [CityCoordinates] = [CityCoordinates(name: "Київ", lat: "50.7258", lon: "24.1626")]
+  private var cities: [CityCoordinates] = []
   
   lazy private var tableView = UITableView()
   
   override func viewDidLoad() {
     super.viewDidLoad()
-    view.backgroundColor = .systemBackground
-    self.title = "Вибрані"
-    self.navigationItem.hidesBackButton = true
-    navigationController?.navigationBar.prefersLargeTitles = true
-    self.navigationItem.largeTitleDisplayMode = .automatic
-    CitiesCoordinatesModel.shared.loadCitiesCoordinatesFromStorage()
+    setupViewController()
+    CitiesCoordinatesModel.shared.loadCitiesCoordinatesFromStorage(coordinates: Storage.shared.loadCityCoordinates())
+    cities = CitiesCoordinatesModel.shared.getAllCitiesCoordinates()
     setupTebleView(tableView)
   }
   
-  override func viewWillAppear(_ animated: Bool) {
-    super.viewWillAppear(animated)
-    //cities = CitiesCoordinatesModel.shared.getAllCitiesCoordinates()
+  private func setupViewController() {
+    view.backgroundColor = .systemBackground
+    self.title = "favorites".localized
+    self.navigationItem.hidesBackButton = true
+    navigationController?.navigationBar.prefersLargeTitles = true
+    self.navigationItem.largeTitleDisplayMode = .automatic
+    navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "plus.circle"), style: .plain, target: self, action: #selector(moveToSearchVC))
   }
   
-  func setupTebleView(_ tableView: UITableView) {
+  private func setupTebleView(_ tableView: UITableView) {
     tableView.delegate = self
     tableView.dataSource = self
     tableView.register(CitiesListTableViewCell.self, forCellReuseIdentifier: "cell")
@@ -45,6 +46,13 @@ class CitiesListViewController: UIViewController {
       tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
       tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
     ])
+  }
+  
+  @objc private func moveToSearchVC() {
+    let vc = SearchViewController()
+    vc.delegateFirstViewController = nil
+    vc.delegateReloadCities = self
+    self.present(vc, animated: true)
   }
 }
 
@@ -63,5 +71,11 @@ extension CitiesListViewController: UITableViewDataSource {
 extension CitiesListViewController: UITableViewDelegate {
   func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
     126
+  }
+}
+
+extension CitiesListViewController: ReloadCitiesTableViewControllerDelegate {
+  func reload() {
+    self.tableView.reloadData()
   }
 }

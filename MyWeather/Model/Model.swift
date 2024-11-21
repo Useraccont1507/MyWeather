@@ -84,7 +84,7 @@ struct Main: Decodable {
 struct Wind: Decodable {
   let speed: Double
   let deg: Int
-  let gust: Double
+  let gust: Double?
 }
 
 struct Clouds: Decodable {
@@ -109,8 +109,8 @@ class CitiesCoordinatesModel {
   
   static let shared = CitiesCoordinatesModel()
   
-  func loadCitiesCoordinatesFromStorage() {
-    coordinates = Storage.shared.loadCityCoordinates()
+  func loadCitiesCoordinatesFromStorage(coordinates: [CityCoordinates]) {
+    self.coordinates = coordinates
   }
   
   func getAllCitiesCoordinates() -> [CityCoordinates] {
@@ -119,11 +119,9 @@ class CitiesCoordinatesModel {
   
   func addCityCoordinatesToArray(_ cityElement: CityElement) {
     coordinates.append(CityCoordinates(name: cityElement.name, lat: cityElement.lat, lon: cityElement.lon))
-    Storage.shared.saveCityCoordinates(coordinates)
   }
   
   func deleteCityCoordinates(_ index: Int) {
     coordinates.remove(at: index)
-    Storage.shared.saveCityCoordinates(coordinates)
   }
 }

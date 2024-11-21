@@ -10,3 +10,7 @@ import Foundation
 protocol PushFromFisrtViewControllerDelegate: AnyObject {
   func pushFromSelf()
 }
+
+protocol ReloadCitiesTableViewControllerDelegate: AnyObject {
+  func reload()
+}
