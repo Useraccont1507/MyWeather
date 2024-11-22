@@ -44,7 +44,7 @@ class CitiesListTableViewCell: UITableViewCell {
     rectangle.layer.cornerRadius = 24
     rectangle.layer.shadowColor = UIColor.black.cgColor
     rectangle.layer.shadowOpacity = 0.25
-    rectangle.layer.shadowOffset = CGSize(width: 0, height: 10)
+    rectangle.layer.shadowOffset = CGSize(width: 0, height: 1)
     rectangle.layer.shadowRadius = 10
     rectangle.translatesAutoresizingMaskIntoConstraints = false
     

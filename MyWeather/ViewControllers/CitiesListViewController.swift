@@ -27,6 +27,7 @@ class CitiesListViewController: UIViewController {
     self.navigationItem.hidesBackButton = true
     navigationController?.navigationBar.prefersLargeTitles = true
     self.navigationItem.largeTitleDisplayMode = .automatic
+    self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "edit".localized, style: .plain, target: self, action: #selector(showEditing))
     navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "plus.circle"), style: .plain, target: self, action: #selector(moveToSearchVC))
   }
   
@@ -46,6 +47,18 @@ class CitiesListViewController: UIViewController {
       tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
       tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
     ])
+  }
+  
+  @objc private func showEditing() {
+    if self.tableView.isEditing == true {
+      self.tableView.isEditing = false
+      self.navigationItem.leftBarButtonItem?.title = "edit".localized
+      self.navigationItem.leftBarButtonItem?.style = .plain
+    } else {
+      self.tableView.isEditing = true
+      self.navigationItem.leftBarButtonItem?.title = "done".localized
+      self.navigationItem.leftBarButtonItem?.style = .done
+    }
   }
   
   @objc private func moveToSearchVC() {
@@ -72,10 +85,22 @@ extension CitiesListViewController: UITableViewDelegate {
   func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
     126
   }
+  
+  func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    <#code#>
+  }
+  
+  func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+    cities.remove(at: indexPath.row)
+    CitiesCoordinatesModel.shared.deleteCityCoordinates(indexPath.row)
+    Storage.shared.saveCityCoordinates(CitiesCoordinatesModel.shared.getAllCitiesCoordinates())
+    tableView.deleteRows(at: [indexPath], with: .left)
+  }
 }
 
 extension CitiesListViewController: ReloadCitiesTableViewControllerDelegate {
   func reload() {
+    self.cities = CitiesCoordinatesModel.shared.getAllCitiesCoordinates()
     self.tableView.reloadData()
   }
 }
