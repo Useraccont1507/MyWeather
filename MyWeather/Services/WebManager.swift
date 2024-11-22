@@ -9,7 +9,28 @@ import Foundation
 
 class WebManager {
   
+  static let shared = WebManager()
+  
   private var apiKey = "5d1d2171badb0afc3302079f35efb3e6"
+  
+  private var units = Units.metric
+  
+  enum Units: String {
+    case imperial
+    case metric
+  }
+  
+  func getUnits() -> Units {
+    units
+  }
+  
+  func switchToFahrenheitUnits() {
+    units = .imperial
+  }
+  
+  func switchToCelsiusUnits() {
+    units = .metric
+  }
   
   func fetchCityCoordinates(for text: String, completion: @escaping (Result<[CityElement], Error>) -> ()) {
     if let url = URL(string: "https://nominatim.openstreetmap.org/search?addressdetails=1&featureType=city&q=" + text + "&format=json&limit=5") {
@@ -40,7 +61,19 @@ class WebManager {
       lang = "ua"
     }
     
-    if let url = URL(string: "https://api.openweathermap.org/data/2.5/weather?lat=" + coordinates.lat + "&lon=" + coordinates.lon + "&lang=" + lang + "&appid=" + apiKey + "&units=metric") {
+    var urlComponents = URLComponents()
+    urlComponents.scheme = "https"
+    urlComponents.host = "api.openweathermap.org"
+    urlComponents.path = "/data/2.5/weather"
+    urlComponents.queryItems = [
+      URLQueryItem(name: "lat", value: coordinates.lat),
+      URLQueryItem(name: "lon", value: coordinates.lon),
+      URLQueryItem(name: "lang", value: lang),
+      URLQueryItem(name: "appid", value: apiKey),
+      URLQueryItem(name: "units", value: units.rawValue)
+    ]
+    
+    if let url = urlComponents.url {
       URLSession.shared.dataTask(with: url) { data, _, error in
         if let error = error {
           completion(.failure(error))
@@ -50,6 +83,42 @@ class WebManager {
           do {
             let weatherNow = try JSONDecoder().decode(WeatherNow.self, from: respData)
             completion(.success(weatherNow))
+          } catch {
+            completion(.failure(error))
+          }
+        }
+      }.resume()
+    }
+  }
+  
+  func fetchTempHourly(for coordinates: CityCoordinates, completion: @escaping (Result<WeatherHourly, Error>) -> ()) {
+    let currentLocale = Locale.current
+    var lang = "en"
+    if currentLocale.languageCode == "uk" {
+      lang = "ua"
+    }
+    var urlComponents = URLComponents()
+    urlComponents.scheme = "https"
+    urlComponents.host = "api.openweathermap.org"
+    urlComponents.path = "/data/2.5/forecast"
+    urlComponents.queryItems = [
+      URLQueryItem(name: "lat", value: coordinates.lat),
+      URLQueryItem(name: "lon", value: coordinates.lon),
+      URLQueryItem(name: "lang", value: lang),
+      URLQueryItem(name: "appid", value: apiKey),
+      URLQueryItem(name: "units", value: units.rawValue)
+    ]
+    
+    if let url = urlComponents.url {
+      URLSession.shared.dataTask(with: url) { data, _, error in
+        if let error = error {
+          completion(.failure(error))
+          return
+        }
+        if let respData = data {
+          do {
+            let weatherHourly = try JSONDecoder().decode(WeatherHourly.self, from: respData)
+            completion(.success(weatherHourly))
           } catch {
             completion(.failure(error))
           }

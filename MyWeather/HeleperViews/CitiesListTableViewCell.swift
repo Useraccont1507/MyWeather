@@ -114,7 +114,7 @@ class CitiesListTableViewCell: UITableViewCell {
     } else {
       cityLabel.text = coordinates.name
     }
-    WebManager().fetchTempNow(for: coordinates) { result in
+    WebManager.shared.fetchTempNow(for: coordinates) { result in
       if coordinates.lat == self.coordinates?.lat {
         DispatchQueue.main.async {
           switch result {

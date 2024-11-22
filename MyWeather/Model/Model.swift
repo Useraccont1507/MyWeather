@@ -7,7 +7,7 @@
 
 import Foundation
 
-//MARK: - For decoding
+//MARK: - City geocoding
 struct CityElement: Codable {
   let placeID: Int
   let licence, osmType: String
@@ -32,9 +32,9 @@ struct CityElement: Codable {
     case boundingbox
   }
 }
-
+// MARK: - WeatherNow
 struct WeatherNow: Decodable {
-  let coord: Coord
+  let coord: Coord?
   let weather: [Weather]
   let base: String
   let main: Main
@@ -97,7 +97,97 @@ struct Sys: Decodable {
   let sunset: Int
 }
 
-//MARK: - For model
+// MARK: - WeatherHourly
+struct WeatherHourly: Decodable {
+    let cod: String
+    let message, cnt: Int
+    let list: [List]
+    let city: City
+}
+
+struct City: Decodable {
+    let id: Int
+    let name: String
+    let coord: Coord
+    let country: String
+    let population, timezone, sunrise, sunset: Int
+}
+
+
+struct List: Decodable {
+    let dt: Int
+    let main: MainClass
+    let weather: [Weather]
+    let clouds: Clouds
+    let wind: Wind
+    let visibility: Int?
+    let pop: Double
+    let snow: Rain?
+    let sys: Sys
+    let dtTxt: String
+    let rain: Rain?
+
+    enum CodingKeys: String, CodingKey {
+        case dt, main, weather, clouds, wind, visibility, pop, snow, sys
+        case dtTxt = "dt_txt"
+        case rain
+    }
+}
+
+struct MainClass: Codable {
+    let temp, feelsLike, tempMin, tempMax: Double
+    let pressure, seaLevel, grndLevel, humidity: Int
+    let tempKf: Double
+
+    enum CodingKeys: String, CodingKey {
+        case temp
+        case feelsLike = "feels_like"
+        case tempMin = "temp_min"
+        case tempMax = "temp_max"
+        case pressure
+        case seaLevel = "sea_level"
+        case grndLevel = "grnd_level"
+        case humidity
+        case tempKf = "temp_kf"
+    }
+}
+
+struct Rain: Codable {
+    let the3H: Double
+
+    enum CodingKeys: String, CodingKey {
+        case the3H = "3h"
+    }
+}
+
+enum Pod: String, Codable {
+    case d = "d"
+    case n = "n"
+}
+
+
+enum Description: String, Codable {
+    case легкийДощ = "легкий дощ"
+    case легкийСніг = "легкий сніг"
+    case рваніХмари = "рвані хмари"
+    case хмарно = "хмарно"
+}
+
+enum Icon: String, Codable {
+    case the04D = "04d"
+    case the04N = "04n"
+    case the10N = "10n"
+    case the13N = "13n"
+}
+
+enum MainEnum: String, Codable {
+    case clouds = "Clouds"
+    case rain = "Rain"
+    case snow = "Snow"
+}
+
+
+//MARK: - Model
 struct CityCoordinates: Equatable {
   var name: String
   var lat: String

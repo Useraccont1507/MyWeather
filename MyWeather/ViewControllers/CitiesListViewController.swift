@@ -12,13 +12,15 @@ class CitiesListViewController: UIViewController {
   private var cities: [CityCoordinates] = []
   
   lazy private var tableView = UITableView()
+  lazy private var toolBar = UIToolbar()
   
   override func viewDidLoad() {
     super.viewDidLoad()
     setupViewController()
     CitiesCoordinatesModel.shared.loadCitiesCoordinatesFromStorage(coordinates: Storage.shared.loadCityCoordinates())
     cities = CitiesCoordinatesModel.shared.getAllCitiesCoordinates()
-    setupTebleView(tableView)
+    setupTableView(tableView)
+    setupToolBar(toolBar)
   }
   
   private func setupViewController() {
@@ -27,11 +29,26 @@ class CitiesListViewController: UIViewController {
     self.navigationItem.hidesBackButton = true
     navigationController?.navigationBar.prefersLargeTitles = true
     self.navigationItem.largeTitleDisplayMode = .automatic
-    self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "edit".localized, style: .plain, target: self, action: #selector(showEditing))
-    navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "plus.circle"), style: .plain, target: self, action: #selector(moveToSearchVC))
+    navigationItem.rightBarButtonItem = UIBarButtonItem(title: "edit".localized, style: .plain, target: self, action: #selector(showEditing))
   }
   
-  private func setupTebleView(_ tableView: UITableView) {
+  private func setupToolBar(_ bar: UIToolbar) {
+    bar.translatesAutoresizingMaskIntoConstraints = false
+    view.addSubview(bar)
+    
+    NSLayoutConstraint.activate([
+      bar.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+      bar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+      bar.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+    ])
+    bar.items = [
+      UIBarButtonItem(title: "C° / F°", style: .plain, target: self, action: #selector(toogleUnits)),
+      UIBarButtonItem(systemItem: .flexibleSpace),
+      UIBarButtonItem(image: UIImage(systemName: "plus.circle"), style: .plain, target: self, action: #selector(moveToSearchVC))
+    ]
+  }
+  
+  private func setupTableView(_ tableView: UITableView) {
     tableView.delegate = self
     tableView.dataSource = self
     tableView.register(CitiesListTableViewCell.self, forCellReuseIdentifier: "cell")
@@ -61,6 +78,17 @@ class CitiesListViewController: UIViewController {
     }
   }
   
+  @objc private func toogleUnits() {
+    switch WebManager.shared.getUnits() {
+    case .imperial:
+      WebManager.shared.switchToCelsiusUnits()
+      self.tableView.reloadData()
+    case .metric:
+      WebManager.shared.switchToFahrenheitUnits()
+      self.tableView.reloadData()
+    }
+  }
+  
   @objc private func moveToSearchVC() {
     let vc = SearchViewController()
     vc.delegateFirstViewController = nil
@@ -87,7 +115,7 @@ extension CitiesListViewController: UITableViewDelegate {
   }
   
   func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-    <#code#>
+    //
   }
   
   func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
