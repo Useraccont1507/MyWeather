@@ -80,7 +80,7 @@ class FirstViewController: UIViewController {
     view.addSubview(button)
     
     NSLayoutConstraint.activate([
-      button.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -16),
+      button.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
       button.centerXAnchor.constraint(equalTo: view.centerXAnchor),
       button.widthAnchor.constraint(equalToConstant: 220),
       button.heightAnchor.constraint(equalToConstant: 50)
@@ -88,7 +88,7 @@ class FirstViewController: UIViewController {
   }
   
   @objc private func moveToSeacrh() {
-    let vc = SearchViewController()
+    let vc = SearchCityViewController()
     vc.delegateFirstViewController = self
     self.present(vc, animated: true)
   }

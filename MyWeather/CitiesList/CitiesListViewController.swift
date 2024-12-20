@@ -33,6 +33,7 @@ class CitiesListViewController: UIViewController {
   }
   
   private func setupToolBar(_ bar: UIToolbar) {
+    bar.barTintColor = .white
     bar.translatesAutoresizingMaskIntoConstraints = false
     view.addSubview(bar)
     
@@ -69,16 +70,16 @@ class CitiesListViewController: UIViewController {
   @objc private func showEditing() {
     if self.tableView.isEditing == true {
       self.tableView.isEditing = false
-      self.navigationItem.leftBarButtonItem?.title = "edit".localized
-      self.navigationItem.leftBarButtonItem?.style = .plain
+      self.navigationItem.rightBarButtonItem?.title = "edit".localized
+      self.navigationItem.rightBarButtonItem?.style = .plain
     } else {
       self.tableView.isEditing = true
-      self.navigationItem.leftBarButtonItem?.title = "done".localized
-      self.navigationItem.leftBarButtonItem?.style = .done
+      self.navigationItem.rightBarButtonItem?.title = "done".localized
+      self.navigationItem.rightBarButtonItem?.style = .done
     }
   }
   
-  @objc private func toogleUnits() {
+  @objc private func toogleUnits(sender: UIBarItem) {
     switch WebManager.shared.getUnits() {
     case .imperial:
       WebManager.shared.switchToCelsiusUnits()
@@ -90,7 +91,7 @@ class CitiesListViewController: UIViewController {
   }
   
   @objc private func moveToSearchVC() {
-    let vc = SearchViewController()
+    let vc = SearchCityViewController()
     vc.delegateFirstViewController = nil
     vc.delegateReloadCities = self
     self.present(vc, animated: true)
@@ -104,6 +105,7 @@ extension CitiesListViewController: UITableViewDataSource {
   
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell") as? CitiesListTableViewCell else { fatalError("Expected CitiesListTableViewCell") }
+    cell.layoutIfNeeded()
     cell.configure(coordinates: cities[indexPath.row])
     return cell
   }
@@ -115,7 +117,7 @@ extension CitiesListViewController: UITableViewDelegate {
   }
   
   func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-    //
+    //TODO: transfer to page
   }
   
   func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
@@ -124,6 +126,22 @@ extension CitiesListViewController: UITableViewDelegate {
     Storage.shared.saveCityCoordinates(CitiesCoordinatesModel.shared.getAllCitiesCoordinates())
     tableView.deleteRows(at: [indexPath], with: .left)
   }
+  
+  /*func tableView(_ tableView: UITableView, willBeginEditingRowAt indexPath: IndexPath) {
+    let cell = tableView.cellForRow(at: indexPath)
+    UIView.animate(withDuration: 3) {
+      cell?.frame.size.width -= 20
+    }
+  }
+  
+  func tableView(_ tableView: UITableView, didEndEditingRowAt indexPath: IndexPath?) {
+    guard let indexPath = indexPath else { return }
+    let cell = tableView.cellForRow(at: indexPath)
+    UIView.animate(withDuration: 3) {
+      cell?.frame.size.width += 20
+    }
+  }
+   */
 }
 
 extension CitiesListViewController: ReloadCitiesTableViewControllerDelegate {

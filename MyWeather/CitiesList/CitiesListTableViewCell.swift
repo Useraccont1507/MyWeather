@@ -11,10 +11,11 @@ class CitiesListTableViewCell: UITableViewCell {
   
   private var coordinates: CityCoordinates?
   
-  lazy private var roundedRectangleView = UIImageView()
+  lazy private var roundedRectangleView = UIView()
   lazy private var cityLabel = UILabel()
   lazy private var weahterDescpitionLabel = UILabel()
   lazy private var tempLabel = UILabel()
+  private var gradientLayer: CAGradientLayer?
   
   override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
     super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -39,13 +40,13 @@ class CitiesListTableViewCell: UITableViewCell {
     // Configure the view for the selected state
   }
   
-  private func setupRoundedRectangleView(_ rectangle: UIImageView) {
-    rectangle.backgroundColor = .gray
+  private func setupRoundedRectangleView(_ rectangle: UIView) {
     rectangle.layer.cornerRadius = 24
     rectangle.layer.shadowColor = UIColor.black.cgColor
-    rectangle.layer.shadowOpacity = 0.25
-    rectangle.layer.shadowOffset = CGSize(width: 0, height: 1)
-    rectangle.layer.shadowRadius = 10
+    rectangle.layer.shadowOpacity = 0.2
+    rectangle.layer.shadowOffset = CGSize(width: 0, height: 5)
+    rectangle.layer.shadowRadius = 6
+    rectangle.layer.masksToBounds = true
     rectangle.translatesAutoresizingMaskIntoConstraints = false
     
     contentView.addSubview(rectangle)
@@ -114,6 +115,9 @@ class CitiesListTableViewCell: UITableViewCell {
     } else {
       cityLabel.text = coordinates.name
     }
+    
+    roundedRectangleView.layoutIfNeeded()
+    
     WebManager.shared.fetchTempNow(for: coordinates) { result in
       if coordinates.lat == self.coordinates?.lat {
         DispatchQueue.main.async {
@@ -121,7 +125,9 @@ class CitiesListTableViewCell: UITableViewCell {
           case .success(let success):
             self.tempLabel.text = String(Int(success.main.temp.rounded())) + "°"
             self.weahterDescpitionLabel.text = success.weather.first?.description
-            self.roundedRectangleView.image = BackgroundManager().getBackgroundSmall(sunrise: success.sys.sunrise, sunset: success.sys.sunset, weatherCode: success.weather.first!.id)
+            
+            let layer = BackgroundManager().getBackground(for: success.weather.first!.id, sunrise: success.sys.sunrise, sunset: success.sys.sunset, frame: self.roundedRectangleView.bounds)
+            self.roundedRectangleView.layer.insertSublayer(layer!, at: 0)
           case .failure(let failure):
             print(failure)
           }

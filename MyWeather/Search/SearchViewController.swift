@@ -7,12 +7,12 @@
 
 import UIKit
 
-class SearchViewController: UIViewController {
+class SearchCityViewController: UIViewController {
   
   weak var delegateFirstViewController: PushFromFisrtViewControllerDelegate?
   weak var delegateReloadCities: ReloadCitiesTableViewControllerDelegate?
   
-  private var searchResultForTableView: [CityElement] = []
+  private var resultForTableView: [CityElement] = []
   
   lazy private var toolBar = UIToolbar()
   lazy private var searchBar = UISearchBar()
@@ -20,13 +20,14 @@ class SearchViewController: UIViewController {
   
   override func viewDidLoad() {
     super.viewDidLoad()
-    view.backgroundColor = .systemBackground
+    view.backgroundColor = .white
     setupToolBar(toolBar)
     setupSearchBar(searchBar)
     setupTableView(resultTableView)
   }
   
   private func setupToolBar(_ bar: UIToolbar) {
+    bar.barTintColor = .white
     bar.translatesAutoresizingMaskIntoConstraints = false
     view.addSubview(bar)
     
@@ -45,6 +46,8 @@ class SearchViewController: UIViewController {
   }
   
   private func setupSearchBar(_ bar: UISearchBar) {
+    bar.setBackgroundImage(UIImage(), for: .any, barMetrics: .default)
+    bar.backgroundColor = .systemBackground
     bar.placeholder = "searchbar_placeholder".localized
     bar.delegate = self
     bar.keyboardType = .default
@@ -63,7 +66,7 @@ class SearchViewController: UIViewController {
     tableView.isScrollEnabled = false
     tableView.delegate = self
     tableView.dataSource = self
-    tableView.register(SearchResultTableViewCell.self, forCellReuseIdentifier: "cell")
+    tableView.register(ResultTableViewCell.self, forCellReuseIdentifier: "cell")
     tableView.translatesAutoresizingMaskIntoConstraints = false
     view.addSubview(tableView)
     
@@ -80,14 +83,14 @@ class SearchViewController: UIViewController {
   }
 }
 
-extension SearchViewController: UISearchBarDelegate {
+extension SearchCityViewController: UISearchBarDelegate {
   func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
     resultTableView.reloadData()
     WebManager().fetchCityCoordinates(for: searchText) { result in
       switch result {
       case .success(let success):
         DispatchQueue.main.async {
-          self.searchResultForTableView = success
+          self.resultForTableView = success
         }
       case .failure(let failure):
         print(failure.localizedDescription)
@@ -96,27 +99,27 @@ extension SearchViewController: UISearchBarDelegate {
   }
 }
 
-extension SearchViewController: UITableViewDataSource {
+extension SearchCityViewController: UITableViewDataSource {
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell") as? SearchResultTableViewCell else { fatalError("Expected SearchResultTableViewCel")
+    guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell") as? ResultTableViewCell else { fatalError("Expected ResultTableViewCel")
     }
-    for item in searchResultForTableView {
+    resultForTableView.forEach { item in
       cell.configureLabels(mainText: item.name, secondaryText: item.displayName)
     }
     return cell
   }
   
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    searchResultForTableView.count
+    return resultForTableView.count
   }
 }
 
-extension SearchViewController: UITableViewDelegate {
+extension SearchCityViewController: UITableViewDelegate {
   func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-    let alertController = UIAlertController(title: "search_alert_title".localized, message: "search_alert_message1".localized + searchResultForTableView[indexPath.row].name + "search_alert_message2".localized, preferredStyle: .alert)
+    let alertController = UIAlertController(title: "search_alert_title".localized, message: "search_alert_message1".localized + resultForTableView[indexPath.row].name + "search_alert_message2".localized, preferredStyle: .alert)
     let cancelAction = UIAlertAction(title: "cancel".localized, style: .cancel)
     let action = UIAlertAction(title: "OK", style: .default) { _ in
-      CitiesCoordinatesModel.shared.addCityCoordinatesToArray(self.searchResultForTableView[indexPath.row])
+      CitiesCoordinatesModel.shared.addCityCoordinatesToArray(self.resultForTableView[indexPath.row])
       Storage.shared.saveCityCoordinates(CitiesCoordinatesModel.shared.getAllCitiesCoordinates())
       self.dissmissViewController()
       self.delegateFirstViewController?.pushFromSelf()

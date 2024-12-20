@@ -12,10 +12,12 @@ struct CityElement: Codable {
   let placeID: Int
   let licence, osmType: String
   let osmID: Int
-  let lat, lon, cityClass, type: String
+  let lat, lon: String
+  let cityClass, type: String
   let placeRank: Int
   let importance: Double
-  let addresstype, name, displayName: String
+  let addresstype: String
+  let name, displayName: String
   let boundingbox: [String]
   
   enum CodingKeys: String, CodingKey {
@@ -92,7 +94,7 @@ struct Clouds: Decodable {
 }
 
 struct Sys: Decodable {
-  let country: String
+  let country: String?
   let sunrise: Int
   let sunset: Int
 }
@@ -109,8 +111,8 @@ struct City: Decodable {
     let id: Int
     let name: String
     let coord: Coord
-    let country: String
-    let population, timezone, sunrise, sunset: Int
+    let country: String?
+    let population, timezone, sunrise, sunset: Int?
 }
 
 
@@ -123,7 +125,7 @@ struct List: Decodable {
     let visibility: Int?
     let pop: Double
     let snow: Rain?
-    let sys: Sys
+    let sys: Sys?
     let dtTxt: String
     let rain: Rain?
 
