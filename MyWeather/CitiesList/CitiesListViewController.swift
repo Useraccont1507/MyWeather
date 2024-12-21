@@ -68,14 +68,16 @@ class CitiesListViewController: UIViewController {
   }
   
   @objc private func showEditing() {
-    if self.tableView.isEditing == true {
-      self.tableView.isEditing = false
-      self.navigationItem.rightBarButtonItem?.title = "edit".localized
-      self.navigationItem.rightBarButtonItem?.style = .plain
-    } else {
-      self.tableView.isEditing = true
-      self.navigationItem.rightBarButtonItem?.title = "done".localized
-      self.navigationItem.rightBarButtonItem?.style = .done
+    UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseOut) {
+      if self.tableView.isEditing == true {
+        self.tableView.isEditing = false
+        self.navigationItem.rightBarButtonItem?.title = "edit".localized
+        self.navigationItem.rightBarButtonItem?.style = .plain
+      } else {
+        self.tableView.isEditing = true
+        self.navigationItem.rightBarButtonItem?.title = "done".localized
+        self.navigationItem.rightBarButtonItem?.style = .done
+      }
     }
   }
   
@@ -83,10 +85,10 @@ class CitiesListViewController: UIViewController {
     switch WebManager.shared.getUnits() {
     case .imperial:
       WebManager.shared.switchToCelsiusUnits()
-      self.tableView.reloadData()
+      self.reloadTableViewWithAnimation()
     case .metric:
       WebManager.shared.switchToFahrenheitUnits()
-      self.tableView.reloadData()
+      self.reloadTableViewWithAnimation()
     }
   }
   
@@ -95,6 +97,20 @@ class CitiesListViewController: UIViewController {
     vc.delegateFirstViewController = nil
     vc.delegateReloadCities = self
     self.present(vc, animated: true)
+  }
+  
+  func reloadTableViewWithAnimation() {
+    UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseIn) {
+      self.tableView.transform = CGAffineTransform(translationX: -self.tableView.frame.width, y: 0)
+    } completion: { isFinished in
+      if isFinished {
+        self.tableView.reloadData()
+        self.tableView.transform = CGAffineTransform(translationX: self.tableView.frame.width, y: 0)
+        UIView.animate(withDuration: 0.3, delay: 0.1, options: .curveEaseOut) {
+          self.tableView.transform = .identity
+        }
+      }
+    }
   }
 }
 
@@ -147,6 +163,6 @@ extension CitiesListViewController: UITableViewDelegate {
 extension CitiesListViewController: ReloadCitiesTableViewControllerDelegate {
   func reload() {
     self.cities = CitiesCoordinatesModel.shared.getAllCitiesCoordinates()
-    self.tableView.reloadData()
+    self.tableView.reloadSections(IndexSet(integer: 0), with: .middle)
   }
 }

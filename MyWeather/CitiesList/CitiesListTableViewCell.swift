@@ -15,7 +15,6 @@ class CitiesListTableViewCell: UITableViewCell {
   lazy private var cityLabel = UILabel()
   lazy private var weahterDescpitionLabel = UILabel()
   lazy private var tempLabel = UILabel()
-  private var gradientLayer: CAGradientLayer?
   
   override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
     super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -119,7 +118,7 @@ class CitiesListTableViewCell: UITableViewCell {
     roundedRectangleView.layoutIfNeeded()
     
     WebManager.shared.fetchTempNow(for: coordinates) { result in
-      if coordinates.lat == self.coordinates?.lat {
+      if coordinates.lat == self.coordinates!.lat {
         DispatchQueue.main.async {
           switch result {
           case .success(let success):

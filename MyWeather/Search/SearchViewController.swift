@@ -12,7 +12,11 @@ class SearchCityViewController: UIViewController {
   weak var delegateFirstViewController: PushFromFisrtViewControllerDelegate?
   weak var delegateReloadCities: ReloadCitiesTableViewControllerDelegate?
   
-  private var resultForTableView: [CityElement] = []
+  private var resultForTableView: [CityElement] = [] {
+    didSet {
+      self.resultTableView.reloadData()
+    }
+  }
   
   lazy private var toolBar = UIToolbar()
   lazy private var searchBar = UISearchBar()
@@ -85,7 +89,6 @@ class SearchCityViewController: UIViewController {
 
 extension SearchCityViewController: UISearchBarDelegate {
   func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-    resultTableView.reloadData()
     WebManager().fetchCityCoordinates(for: searchText) { result in
       switch result {
       case .success(let success):
