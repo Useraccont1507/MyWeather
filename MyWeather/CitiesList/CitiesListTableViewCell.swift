@@ -123,7 +123,7 @@ class CitiesListTableViewCell: UITableViewCell {
           switch result {
           case .success(let success):
             self.tempLabel.text = String(Int(success.main.temp.rounded())) + "°"
-            self.weahterDescpitionLabel.text = success.weather.first?.description
+            self.weahterDescpitionLabel.text = success.weather.first?.description.capitalizeFirstWord()
             
             let layer = BackgroundManager().getBackground(for: success.weather.first!.id, sunrise: success.sys.sunrise, sunset: success.sys.sunset, frame: self.roundedRectangleView.bounds)
             self.roundedRectangleView.layer.insertSublayer(layer!, at: 0)

@@ -16,4 +16,9 @@ extension String {
     let formatString = NSLocalizedString(self, comment: "\(self) could not be found in Localizable.stringdict")
     return Self.localizedStringWithFormat(formatString, arg)
   }
+  
+  func capitalizeFirstWord() -> String {
+    guard let firstChar = self.first else { return self }
+    return firstChar.uppercased() + self.dropFirst()
+  }
 }

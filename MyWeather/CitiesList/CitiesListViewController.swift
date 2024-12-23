@@ -54,6 +54,7 @@ class CitiesListViewController: UIViewController {
     tableView.dataSource = self
     tableView.register(CitiesListTableViewCell.self, forCellReuseIdentifier: "cell")
     tableView.separatorStyle = .none
+    tableView.allowsSelectionDuringEditing = false
     tableView.showsVerticalScrollIndicator = false
     tableView.translatesAutoresizingMaskIntoConstraints = false
     
@@ -99,7 +100,7 @@ class CitiesListViewController: UIViewController {
     self.present(vc, animated: true)
   }
   
-  func reloadTableViewWithAnimation() {
+  private func reloadTableViewWithAnimation() {
     UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseIn) {
       self.tableView.transform = CGAffineTransform(translationX: -self.tableView.frame.width, y: 0)
     } completion: { isFinished in
@@ -121,6 +122,7 @@ extension CitiesListViewController: UITableViewDataSource {
   
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell") as? CitiesListTableViewCell else { fatalError("Expected CitiesListTableViewCell") }
+    cell.selectionStyle = .none
     cell.layoutIfNeeded()
     cell.configure(coordinates: cities[indexPath.row])
     return cell
@@ -133,7 +135,9 @@ extension CitiesListViewController: UITableViewDelegate {
   }
   
   func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-    //TODO: transfer to page
+    let vc = PageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal)
+    vc.transferCities(self.cities, pageIndex: indexPath.row)
+    navigationController?.pushViewController(vc, animated: true)
   }
   
   func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
