@@ -30,7 +30,7 @@ class HourlyForecastView: UIView {
   }
   
   private func setupHeaderLabel(_ label: UILabel) {
-    label.text = "Hourly forecast"
+    label.text = "hourly_forecast".localized
     label.font = .systemFont(ofSize: 22, weight: .regular)
     label.textColor = .white
     label.textAlignment = .left
