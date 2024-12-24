@@ -125,7 +125,7 @@ class CitiesListTableViewCell: UITableViewCell {
             self.tempLabel.text = String(Int(success.main.temp.rounded())) + "°"
             self.weahterDescpitionLabel.text = success.weather.first?.description.capitalizeFirstWord()
             
-            let layer = BackgroundManager().getBackground(for: success.weather.first!.id, sunrise: success.sys.sunrise, sunset: success.sys.sunset, frame: self.roundedRectangleView.bounds)
+            let layer = BackgroundManager().getBackground(for: success.weather.first!.id, sunrise: success.sys.sunrise ?? 0, sunset: success.sys.sunset ?? 0, frame: self.roundedRectangleView.bounds)
             self.roundedRectangleView.layer.insertSublayer(layer!, at: 0)
           case .failure(let failure):
             print(failure)

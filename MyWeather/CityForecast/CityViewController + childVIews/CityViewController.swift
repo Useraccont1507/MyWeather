@@ -10,6 +10,7 @@ import UIKit
 class CityViewController: UIViewController {
   
   private var city: CityCoordinates?
+  private var timeZone: TimeZone?
   
   lazy private var scrollView = UIScrollView()
   lazy private var contentView = UIView()
@@ -25,6 +26,7 @@ class CityViewController: UIViewController {
     setupContentView(contentView)
     setupCityLabel(cityLabel)
     setupTimeLabel(timeLabel)
+    configureTime()
     setupWeatherDescriprion(weatherDescriprionView)
     setupHourlyForecastView(hourlyForecastView)
   }
@@ -35,7 +37,7 @@ class CityViewController: UIViewController {
       switch result {
       case .success(let success):
         DispatchQueue.main.async {
-          let layer = BackgroundManager().getBackground(for: success.weather.first!.id, sunrise: success.sys.sunrise, sunset: success.sys.sunset, frame: self.view.bounds)
+          let layer = BackgroundManager().getBackground(for: success.weather.first!.id, sunrise: success.sys.sunrise ?? 0, sunset: success.sys.sunset ?? 0, frame: self.view.bounds)
           self.view.layer.insertSublayer(layer!, at: 0)
         }
       case .failure(let failure):
@@ -86,11 +88,7 @@ class CityViewController: UIViewController {
   }
   
   private func setupTimeLabel(_ label: UILabel) {
-    let dateFormatter = DateFormatter()
-    dateFormatter.dateFormat = "MMM d, HH:mm"
-    let text = dateFormatter.string(from: Date.now)
-    
-    label.text = text
+    label.text = "--- -, --:--"
     label.font = .systemFont(ofSize: 18, weight: .light)
     label.textColor = .white
     label.textAlignment = .center
@@ -104,8 +102,8 @@ class CityViewController: UIViewController {
   }
   
   private func setupWeatherDescriprion(_ view: WeatherDescriprionView) {
-    view.translatesAutoresizingMaskIntoConstraints = false
     view.configure(city)
+    view.translatesAutoresizingMaskIntoConstraints = false
     contentView.addSubview(view)
     
     NSLayoutConstraint.activate([
@@ -116,20 +114,43 @@ class CityViewController: UIViewController {
     ])
   }
   
-  private func setupHourlyForecastView(_ view: UIView) {
-    view.translatesAutoresizingMaskIntoConstraints = false
-    contentView.addSubview(view)
-    
-    NSLayoutConstraint.activate([
-      view.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-      view.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-      view.topAnchor.constraint(equalTo: weatherDescriprionView.bottomAnchor, constant: 16),
-      view.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-      view.heightAnchor.constraint(equalToConstant: 154)
-    ])
+  private func setupHourlyForecastView(_ view: HourlyForecastView) {
+    view.configure(city: city, timezone: timeZone) {
+      view.translatesAutoresizingMaskIntoConstraints = false
+      self.contentView.addSubview(view)
+      
+      NSLayoutConstraint.activate([
+        view.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor, constant: 16),
+        view.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor, constant: -16),
+        view.topAnchor.constraint(equalTo: self.weatherDescriprionView.bottomAnchor, constant: 16),
+        view.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor),
+        view.heightAnchor.constraint(equalToConstant: 154)
+      ])
+    }
   }
   
   func configure(_ city: CityCoordinates) {
     self.city = city
+  }
+  
+  func configureTime() {
+    guard let city = city else { return }
+    WebManager.shared.fetchTempNow(for: city) { result in
+      switch result {
+      case .success(let success):
+        DispatchQueue.main.async {
+          let dateFormatter = DateFormatter()
+          dateFormatter.dateFormat = "MMM d, HH:mm"
+          let timeManager = TimeManager()
+          let timezone = TimeZone(identifier: timeManager.getTimeZoneIdentifier(for: success.sys.country!))
+          self.timeZone = timezone
+          dateFormatter.timeZone = timezone
+          let text = dateFormatter.string(from: Date.now)
+          self.timeLabel.text = text
+        }
+      case .failure(let failure):
+        print(failure)
+      }
+    }
   }
 }

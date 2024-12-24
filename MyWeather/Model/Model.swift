@@ -95,8 +95,8 @@ struct Clouds: Decodable {
 
 struct Sys: Decodable {
   let country: String?
-  let sunrise: Int
-  let sunset: Int
+  let sunrise: Int?
+  let sunset: Int?
 }
 
 // MARK: - WeatherHourly

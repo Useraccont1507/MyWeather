@@ -13,8 +13,8 @@ class WeatherDescriprionView: UIView {
   lazy private var weatherDescriprionLabel = UILabel()
   lazy private var tempLabel = UILabel()
   lazy private var separatorView = UIView()
-  lazy private var maxTempLabel = UILabel()
-  lazy private var minTempLabel = UILabel()
+  lazy private var sunriseLabel = UILabel()
+  lazy private var sunsetLabel = UILabel()
   
   init() {
     super.init(frame: .zero)
@@ -22,8 +22,8 @@ class WeatherDescriprionView: UIView {
     setupWeatherDescriprionLabel(weatherDescriprionLabel)
     setupTempLabel(tempLabel)
     setupSeparatorView(separatorView)
-    setupMaxLabel(maxTempLabel)
-    setupMinLabel(minTempLabel)
+    setupSunriseLabel(sunriseLabel)
+    setupSunsetLabel(sunsetLabel)
   }
   
   required init?(coder: NSCoder) {
@@ -72,7 +72,7 @@ class WeatherDescriprionView: UIView {
     ])
   }
   
-  private func setupMaxLabel(_ label: UILabel) {
+  private func setupSunriseLabel(_ label: UILabel) {
     label.text = "max --°"
     label.font = .systemFont(ofSize: 18, weight: .regular)
     label.textColor = .white
@@ -94,12 +94,12 @@ class WeatherDescriprionView: UIView {
     NSLayoutConstraint.activate([
       separator.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
       separator.centerYAnchor.constraint(equalTo: tempLabel.centerYAnchor),
-      separator.widthAnchor.constraint(equalToConstant: 72),
+      separator.widthAnchor.constraint(equalToConstant: 92),
       separator.heightAnchor.constraint(equalToConstant: 2)
     ])
   }
   
-  private func setupMinLabel(_ label: UILabel) {
+  private func setupSunsetLabel(_ label: UILabel) {
     label.text = "min --°"
     label.font = .systemFont(ofSize: 18, weight: .regular)
     label.textColor = .white
@@ -122,12 +122,25 @@ class WeatherDescriprionView: UIView {
           self.weatherDescriprionLabel.text = success.weather.first?.description.capitalizeFirstWord()
           self.tempLabel.text = String(Int(success.main.temp.rounded())) + "°"
           
-          let sunrise = success.sys.sunrise
-          let sunset = success.sys.sunset
+          
+          let timeManager = TimeManager()
+          let dateFormatter = DateFormatter()
+          dateFormatter.timeZone = TimeZone(identifier: timeManager.getTimeZoneIdentifier(for: success.sys.country!))
+          dateFormatter.dateFormat = "HH:mm"
+          
+          
+          let sunriseDate = timeManager.decodeUnixToGMTTime(success.sys.sunrise ?? 0)
+          let sunsetDate = timeManager.decodeUnixToGMTTime(success.sys.sunset ?? 0)
+          let sunriseString = dateFormatter.string(from: sunriseDate)
+          let sunsetString = dateFormatter.string(from: sunsetDate)
+          
+          self.sunriseLabel.text = "☼ ↑" + " " + sunriseString
+          self.sunsetLabel.text = "☼ ↓" + " " + sunsetString
+          
           let weatherCode = success.weather.first!.icon
           
           
-          WeatherIconManager().getIcon(with: weatherCode, sunrise: sunrise, sunset: sunset) { result in
+          WeatherIconManager().getIcon(with: weatherCode) { result in
             switch result {
             case .success(let success):
               DispatchQueue.main.async {

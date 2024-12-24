@@ -9,6 +9,9 @@ import UIKit
 
 class HourlyForecastView: UIView {
   
+  private var weatherList: [List] = []
+  private var timezone: TimeZone?
+  
   lazy private var imageView = UIImageView()
   lazy private var headerLabel = UILabel()
   lazy private var separatorView = UIView()
@@ -87,18 +90,35 @@ class HourlyForecastView: UIView {
     ])
   }
   
+  func configure(city: CityCoordinates?, timezone: TimeZone?, completion: @escaping () -> ()) {
+    self.timezone = timezone
+    guard let city = city else { return }
+    WebManager.shared.fetchTempHourly(for: city) { result in
+      switch result {
+      case .success(let success):
+        DispatchQueue.main.async {
+          self.weatherList = success.list
+          completion()
+        }
+      case .failure(let failure):
+        print(failure)
+      }
+    }
+  }
 }
 
 extension HourlyForecastView: UICollectionViewDataSource {
   func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-    10
+    return weatherList.count
   }
   
   func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
     guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as? CollectionViewCell else {
       fatalError("Expected CollectionViewCell")
     }
-    cell.configure(time: 100, humidity: 1, weatherId: 1, temp: 12.0)
+    let item = self.weatherList[indexPath.row]
+    cell.configure(time: item.dt, timezone: self.timezone, weatherIcon: item.weather.first!.icon, temp: item.main.temp)
+    
     return cell
   }
 }
