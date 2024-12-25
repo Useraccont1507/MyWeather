@@ -10,24 +10,19 @@ import UIKit
 
 class WeatherIconManager {
   
-  func getIcon(with weatherCode: String, completion: @escaping (Result<UIImage, Error>) -> ()) {
-    
-    let url = URL(string: "https://openweathermap.org/img/wn/" + weatherCode + "@2x.png")
-    
-    if let url = url {
-      URLSession.shared.dataTask(with: url) { data, _, error in
-        if let error = error {
-          completion(.failure(error))
-          return
-        }
-        if let data = data {
-          if let image = UIImage(data: data) {
-            completion(.success(image))
-          } else {
-            print("no image from data")
-          }
-        }
-      }.resume()
+  func getIcon(with weatherCode: String) -> String {
+    switch weatherCode {
+    case "01d": return "☀️"
+    case "01n": return "🌑"
+    case "02d": return "⛅️"
+    case "02n": return "☁️"
+    case "03d", "03n", "04d", "04n": return "☁️"
+    case "09d", "09n", "10d", "10n": return "🌧️"
+    case "11d", "11n": return "🌩️"
+    case "13d", "13n": return "❄️"
+    case "50d", "50n": return "💨"
+    default:
+      return "01n"
     }
   }
 }

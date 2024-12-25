@@ -10,10 +10,8 @@ import UIKit
 class CollectionViewCell: UICollectionViewCell {
   
   lazy private var timeLabel = UILabel()
-  lazy private var weatherIcon = UIImageView()
+  lazy private var weatherIcon = UILabel()
   lazy private var tempLabel = UILabel()
-  
-  private var weatherIconID: String?
   
   override init(frame: CGRect) {
     super.init(frame: frame)
@@ -34,21 +32,21 @@ class CollectionViewCell: UICollectionViewCell {
     contentView.addSubview(label)
     
     NSLayoutConstraint.activate([
-      label.bottomAnchor.constraint(equalTo: weatherIcon.topAnchor),
-      label.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+      label.bottomAnchor.constraint(equalTo: weatherIcon.topAnchor, constant: -8),
+      label.centerXAnchor.constraint(equalTo: contentView.centerXAnchor)
     ])
   }
   
-  private func setupWeatherIcon(_ imageView: UIImageView) {
-    imageView.contentMode = .scaleAspectFit
-    imageView.translatesAutoresizingMaskIntoConstraints = false
-    addSubview(imageView)
+  private func setupWeatherIcon(_ label: UILabel) {
+    label.text = "-"
+    label.font = .systemFont(ofSize: 28, weight: .regular)
+    label.textAlignment = .left
+    label.translatesAutoresizingMaskIntoConstraints = false
+    addSubview(label)
     
     NSLayoutConstraint.activate([
-      imageView.widthAnchor.constraint(equalToConstant: 54),
-      imageView.heightAnchor.constraint(equalToConstant: 54),
-      imageView.centerXAnchor.constraint(equalTo: centerXAnchor),
-      imageView.centerYAnchor.constraint(equalTo: centerYAnchor)
+      label.centerXAnchor.constraint(equalTo: centerXAnchor),
+      label.centerYAnchor.constraint(equalTo: centerYAnchor)
     ])
   }
   
@@ -66,7 +64,7 @@ class CollectionViewCell: UICollectionViewCell {
   }
   
   func configure(time: Int, timezone: TimeZone?, weatherIcon: String, temp: Double) {
-    self.weatherIconID = weatherIcon
+    self.weatherIcon.text = WeatherIconManager().getIcon(with: weatherIcon)
     
     self.tempLabel.text = String(Int(temp.rounded())) + "°"
     
@@ -76,21 +74,5 @@ class CollectionViewCell: UICollectionViewCell {
     dateFormatter.timeZone = timezone
     let text = dateFormatter.string(from: timeManager.decodeUnixToGMTTime(time))
     self.timeLabel.text = text
-    
-    if weatherIcon == self.weatherIconID {
-      WeatherIconManager().getIcon(with: weatherIcon) { result in
-        switch result {
-        case .success(let success):
-          DispatchQueue.main.async {
-            self.weatherIcon.image = success
-          }
-        case .failure(let failure):
-          print(failure)
-          DispatchQueue.main.async {
-            self.weatherIcon.image = UIImage(systemName: "cloud")
-          }
-        }
-      }
-    }
   }
 }

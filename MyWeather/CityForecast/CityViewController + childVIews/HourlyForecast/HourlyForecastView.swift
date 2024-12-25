@@ -19,28 +19,14 @@ class HourlyForecastView: UIView {
   
   init() {
     super.init(frame: .zero)
-    setupHeaderLabel(headerLabel)
     setupImageView(imageView)
+    setupHeaderLabel(headerLabel)
     setupSeparatorView(separatorView)
     setupCollectionView(collectionView)
   }
   
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
-  }
-  
-  private func setupHeaderLabel(_ label: UILabel) {
-    label.text = "hourly_forecast".localized
-    label.font = .systemFont(ofSize: 22, weight: .regular)
-    label.textColor = .white
-    label.textAlignment = .left
-    label.translatesAutoresizingMaskIntoConstraints = false
-    addSubview(label)
-    
-    NSLayoutConstraint.activate([
-      label.topAnchor.constraint(equalTo: topAnchor),
-      label.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 28)
-    ])
   }
   
   private func setupImageView(_ imageView: UIImageView) {
@@ -55,19 +41,33 @@ class HourlyForecastView: UIView {
       imageView.widthAnchor.constraint(equalToConstant: 20),
       imageView.heightAnchor.constraint(equalToConstant: 20),
       imageView.leadingAnchor.constraint(equalTo: leadingAnchor),
-      imageView.centerYAnchor.constraint(equalTo: headerLabel.centerYAnchor)
+      imageView.topAnchor.constraint(equalTo: topAnchor)
+    ])
+  }
+  
+  private func setupHeaderLabel(_ label: UILabel) {
+    label.text = "hourly_forecast".localized
+    label.font = .systemFont(ofSize: 22, weight: .regular)
+    label.textColor = .white
+    label.textAlignment = .left
+    label.translatesAutoresizingMaskIntoConstraints = false
+    addSubview(label)
+    
+    NSLayoutConstraint.activate([
+      label.centerYAnchor.constraint(equalTo: imageView.centerYAnchor),
+      label.leadingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: 8)
     ])
   }
   
   private func setupSeparatorView(_ separator: UIView) {
-    separator.backgroundColor = .lightGray
+    separator.backgroundColor = .white
     separator.translatesAutoresizingMaskIntoConstraints = false
     addSubview(separator)
     
     NSLayoutConstraint.activate([
       separator.leadingAnchor.constraint(equalTo: leadingAnchor),
       separator.trailingAnchor.constraint(equalTo: trailingAnchor),
-      separator.topAnchor.constraint(equalTo: headerLabel.bottomAnchor, constant: 8),
+      separator.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 8),
       separator.heightAnchor.constraint(equalToConstant: 2)
     ])
   }
@@ -90,26 +90,14 @@ class HourlyForecastView: UIView {
     ])
   }
   
-  func configure(city: CityCoordinates?, timezone: TimeZone?, completion: @escaping () -> ()) {
-    self.timezone = timezone
-    guard let city = city else { return }
-    WebManager.shared.fetchTempHourly(for: city) { result in
-      switch result {
-      case .success(let success):
-        DispatchQueue.main.async {
-          self.weatherList = success.list
-          completion()
-        }
-      case .failure(let failure):
-        print(failure)
-      }
-    }
+  func configure(list: [List]) {
+    self.weatherList = list
   }
 }
 
 extension HourlyForecastView: UICollectionViewDataSource {
   func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-    return weatherList.count
+    weatherList.count
   }
   
   func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {

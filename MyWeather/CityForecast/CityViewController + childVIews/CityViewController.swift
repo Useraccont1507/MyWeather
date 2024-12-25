@@ -11,6 +11,7 @@ class CityViewController: UIViewController {
   
   private var city: CityCoordinates?
   private var timeZone: TimeZone?
+  private var visibility: Int?
   
   lazy private var scrollView = UIScrollView()
   lazy private var contentView = UIView()
@@ -18,20 +19,23 @@ class CityViewController: UIViewController {
   lazy private var timeLabel = UILabel()
   lazy private var weatherDescriprionView = WeatherDescriprionView()
   lazy private var hourlyForecastView = HourlyForecastView()
+  lazy private var visibilityView = VisibilityView()
+  lazy private var windView = WindView()
   
   override func viewDidLoad() {
     super.viewDidLoad()
-    setupBackground()
+    getData()
     setupScrollView(scrollView)
     setupContentView(contentView)
     setupCityLabel(cityLabel)
     setupTimeLabel(timeLabel)
-    configureTime()
     setupWeatherDescriprion(weatherDescriprionView)
     setupHourlyForecastView(hourlyForecastView)
+    setupVisibilityView(visibilityView)
+    setupWindView(windView)
   }
   
-  private func setupBackground() {
+  private func getData() {
     guard let city = city else { return }
     WebManager.shared.fetchTempNow(for: city) { result in
       switch result {
@@ -39,6 +43,34 @@ class CityViewController: UIViewController {
         DispatchQueue.main.async {
           let layer = BackgroundManager().getBackground(for: success.weather.first!.id, sunrise: success.sys.sunrise ?? 0, sunset: success.sys.sunset ?? 0, frame: self.view.bounds)
           self.view.layer.insertSublayer(layer!, at: 0)
+          self.visibility = success.visibility
+          let dateFormatter = DateFormatter()
+          dateFormatter.dateFormat = "MMM d, HH:mm"
+          let timezone = TimeZone(secondsFromGMT: success.timezone)
+          
+          self.timeZone = timezone
+          dateFormatter.timeZone = timezone
+          let text = dateFormatter.string(from: Date.now)
+          self.timeLabel.text = text
+          
+          self.weatherDescriprionView.configure(icon: success.weather.first!.icon, description: success.weather.first!.description, temp: success.main.temp, timezone: success.timezone, sunrise: success.sys.sunrise, sunset: success.sys.sunset)
+          self.visibilityView.configure(visibility: success.visibility)
+          self.windView.configure(wind: success.wind)
+        }
+      case .failure(let failure):
+        print(failure)
+      }
+    }
+  }
+  
+  private func getDataHourly(completion: @escaping ()->()) {
+    guard let city = city else { return }
+    WebManager.shared.fetchTempHourly(for: city) { result in
+      switch result {
+      case .success(let success):
+        DispatchQueue.main.async {
+          self.hourlyForecastView.configure(list: success.list)
+          completion()
         }
       case .failure(let failure):
         print(failure)
@@ -102,7 +134,6 @@ class CityViewController: UIViewController {
   }
   
   private func setupWeatherDescriprion(_ view: WeatherDescriprionView) {
-    view.configure(city)
     view.translatesAutoresizingMaskIntoConstraints = false
     contentView.addSubview(view)
     
@@ -115,7 +146,7 @@ class CityViewController: UIViewController {
   }
   
   private func setupHourlyForecastView(_ view: HourlyForecastView) {
-    view.configure(city: city, timezone: timeZone) {
+    getDataHourly {
       view.translatesAutoresizingMaskIntoConstraints = false
       self.contentView.addSubview(view)
       
@@ -129,28 +160,29 @@ class CityViewController: UIViewController {
     }
   }
   
-  func configure(_ city: CityCoordinates) {
-    self.city = city
+  private func setupVisibilityView(_ view: VisibilityView) {
+    view.translatesAutoresizingMaskIntoConstraints = false
+    contentView.addSubview(view)
+    
+    NSLayoutConstraint.activate([
+      view.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor, constant: 16),
+      view.trailingAnchor.constraint(equalTo: self.contentView.centerXAnchor, constant: -8),
+      view.topAnchor.constraint(equalTo: weatherDescriprionView.bottomAnchor, constant: 186)
+    ])
   }
   
-  func configureTime() {
-    guard let city = city else { return }
-    WebManager.shared.fetchTempNow(for: city) { result in
-      switch result {
-      case .success(let success):
-        DispatchQueue.main.async {
-          let dateFormatter = DateFormatter()
-          dateFormatter.dateFormat = "MMM d, HH:mm"
-          let timeManager = TimeManager()
-          let timezone = TimeZone(identifier: timeManager.getTimeZoneIdentifier(for: success.sys.country!))
-          self.timeZone = timezone
-          dateFormatter.timeZone = timezone
-          let text = dateFormatter.string(from: Date.now)
-          self.timeLabel.text = text
-        }
-      case .failure(let failure):
-        print(failure)
-      }
-    }
+  private func setupWindView(_ view: WindView) {
+    view.translatesAutoresizingMaskIntoConstraints = false
+    contentView.addSubview(view)
+    
+    NSLayoutConstraint.activate([
+      view.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor, constant: -16),
+      view.leadingAnchor.constraint(equalTo: self.contentView.centerXAnchor, constant: 8),
+      view.topAnchor.constraint(equalTo: weatherDescriprionView.bottomAnchor, constant: 186)
+    ])
+  }
+  
+  func configure(_ city: CityCoordinates) {
+    self.city = city
   }
 }

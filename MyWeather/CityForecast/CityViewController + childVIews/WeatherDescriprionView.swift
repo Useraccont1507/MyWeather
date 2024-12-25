@@ -9,12 +9,14 @@ import UIKit
 
 class WeatherDescriprionView: UIView {
   
-  lazy private var weatherIcon = UIImageView()
+  lazy private var weatherIcon = UILabel()
   lazy private var weatherDescriprionLabel = UILabel()
   lazy private var tempLabel = UILabel()
   lazy private var separatorView = UIView()
   lazy private var sunriseLabel = UILabel()
+  lazy private var sunriseImageView = UIImageView()
   lazy private var sunsetLabel = UILabel()
+  lazy private var sunsetImageView = UIImageView()
   
   init() {
     super.init(frame: .zero)
@@ -22,7 +24,9 @@ class WeatherDescriprionView: UIView {
     setupWeatherDescriprionLabel(weatherDescriprionLabel)
     setupTempLabel(tempLabel)
     setupSeparatorView(separatorView)
+    setupSunriseImageView(sunriseImageView)
     setupSunriseLabel(sunriseLabel)
+    setupSunsetImageView(sunsetImageView)
     setupSunsetLabel(sunsetLabel)
   }
   
@@ -30,17 +34,16 @@ class WeatherDescriprionView: UIView {
     fatalError("init(coder:) has not been implemented")
   }
   
-  private func setupWeatherIcon(_ imageView: UIImageView) {
-    imageView.image = UIImage(systemName: "clock")
-    imageView.contentMode = .scaleAspectFit
-    imageView.translatesAutoresizingMaskIntoConstraints = false
-    addSubview(imageView)
+  private func setupWeatherIcon(_ label: UILabel) {
+    label.text = "-"
+    label.font = .systemFont(ofSize: 28, weight: .regular)
+    label.textAlignment = .left
+    label.translatesAutoresizingMaskIntoConstraints = false
+    addSubview(label)
     
     NSLayoutConstraint.activate([
-      imageView.widthAnchor.constraint(equalToConstant: 64),
-      imageView.heightAnchor.constraint(equalToConstant: 64),
-      imageView.topAnchor.constraint(equalTo: topAnchor),
-      imageView.leadingAnchor.constraint(equalTo: leadingAnchor)
+      label.topAnchor.constraint(equalTo: topAnchor),
+      label.leadingAnchor.constraint(equalTo: leadingAnchor)
     ])
   }
   
@@ -53,7 +56,7 @@ class WeatherDescriprionView: UIView {
     addSubview(label)
     
     NSLayoutConstraint.activate([
-      label.topAnchor.constraint(equalTo: topAnchor, constant: 16),
+      label.topAnchor.constraint(equalTo: topAnchor),
       label.leadingAnchor.constraint(equalTo: weatherIcon.trailingAnchor, constant: 4)
     ])
   }
@@ -73,7 +76,7 @@ class WeatherDescriprionView: UIView {
   }
   
   private func setupSunriseLabel(_ label: UILabel) {
-    label.text = "max --°"
+    label.text = "--:--"
     label.font = .systemFont(ofSize: 18, weight: .regular)
     label.textColor = .white
     label.textAlignment = .left
@@ -81,13 +84,28 @@ class WeatherDescriprionView: UIView {
     addSubview(label)
     
     NSLayoutConstraint.activate([
-      label.bottomAnchor.constraint(equalTo: separatorView.topAnchor, constant: -8),
-      label.leadingAnchor.constraint(equalTo: separatorView.leadingAnchor, constant: 4)
+      label.centerYAnchor.constraint(equalTo: sunriseImageView.centerYAnchor),
+      label.leadingAnchor.constraint(equalTo: sunriseImageView.trailingAnchor, constant: 8)
+    ])
+  }
+  
+  private func setupSunriseImageView(_ imageView: UIImageView) {
+    imageView.image = UIImage(systemName: "sunrise.fill")
+    imageView.tintColor = .white
+    imageView.contentMode = .scaleAspectFill
+    imageView.translatesAutoresizingMaskIntoConstraints = false
+    addSubview(imageView)
+    
+    NSLayoutConstraint.activate([
+      imageView.widthAnchor.constraint(equalToConstant: 24),
+      imageView.heightAnchor.constraint(equalToConstant: 24),
+      imageView.bottomAnchor.constraint(equalTo: separatorView.topAnchor, constant: -4),
+      imageView.leadingAnchor.constraint(equalTo: separatorView.leadingAnchor, constant: 4)
     ])
   }
   
   private func setupSeparatorView(_ separator: UIView) {
-    separator.backgroundColor = .lightGray
+    separator.backgroundColor = .white
     separator.translatesAutoresizingMaskIntoConstraints = false
     addSubview(separator)
     
@@ -100,7 +118,7 @@ class WeatherDescriprionView: UIView {
   }
   
   private func setupSunsetLabel(_ label: UILabel) {
-    label.text = "min --°"
+    label.text = "--:--"
     label.font = .systemFont(ofSize: 18, weight: .regular)
     label.textColor = .white
     label.textAlignment = .left
@@ -108,52 +126,43 @@ class WeatherDescriprionView: UIView {
     addSubview(label)
     
     NSLayoutConstraint.activate([
-      label.topAnchor.constraint(equalTo: separatorView.bottomAnchor, constant: 8),
-      label.leadingAnchor.constraint(equalTo: separatorView.leadingAnchor, constant: 4)
+      label.centerYAnchor.constraint(equalTo: sunsetImageView.centerYAnchor),
+      label.leadingAnchor.constraint(equalTo: sunsetImageView.trailingAnchor, constant: 8)
     ])
   }
   
-  func configure(_ city: CityCoordinates?) {
-    guard let city = city else { return }
-    WebManager.shared.fetchTempNow(for: city) { result in
-      switch result {
-      case .success(let success):
-        DispatchQueue.main.async {
-          self.weatherDescriprionLabel.text = success.weather.first?.description.capitalizeFirstWord()
-          self.tempLabel.text = String(Int(success.main.temp.rounded())) + "°"
-          
-          
-          let timeManager = TimeManager()
-          let dateFormatter = DateFormatter()
-          dateFormatter.timeZone = TimeZone(identifier: timeManager.getTimeZoneIdentifier(for: success.sys.country!))
-          dateFormatter.dateFormat = "HH:mm"
-          
-          
-          let sunriseDate = timeManager.decodeUnixToGMTTime(success.sys.sunrise ?? 0)
-          let sunsetDate = timeManager.decodeUnixToGMTTime(success.sys.sunset ?? 0)
-          let sunriseString = dateFormatter.string(from: sunriseDate)
-          let sunsetString = dateFormatter.string(from: sunsetDate)
-          
-          self.sunriseLabel.text = "☼ ↑" + " " + sunriseString
-          self.sunsetLabel.text = "☼ ↓" + " " + sunsetString
-          
-          let weatherCode = success.weather.first!.icon
-          
-          
-          WeatherIconManager().getIcon(with: weatherCode) { result in
-            switch result {
-            case .success(let success):
-              DispatchQueue.main.async {
-                self.weatherIcon.image = success
-              }
-            case .failure(let failure):
-              print(failure)
-            }
-          }
-        }
-      case .failure(let failure):
-        print(failure)
-      }
-    }
+  private func setupSunsetImageView(_ imageView: UIImageView) {
+    imageView.image = UIImage(systemName: "sunset.fill")
+    imageView.tintColor = .white
+    imageView.contentMode = .scaleAspectFill
+    imageView.translatesAutoresizingMaskIntoConstraints = false
+    addSubview(imageView)
+    
+    NSLayoutConstraint.activate([
+      imageView.widthAnchor.constraint(equalToConstant: 24),
+      imageView.heightAnchor.constraint(equalToConstant: 24),
+      imageView.topAnchor.constraint(equalTo: separatorView.bottomAnchor, constant: 4),
+      imageView.leadingAnchor.constraint(equalTo: separatorView.leadingAnchor, constant: 4)
+    ])
+  }
+  
+  func configure(icon: String, description: String, temp: Double, timezone: Int, sunrise: Int?, sunset: Int?) {
+    self.weatherIcon.text = WeatherIconManager().getIcon(with: icon)
+    
+    self.weatherDescriprionLabel.text = description.capitalizeFirstWord()
+    
+    self.tempLabel.text = String(Int(temp.rounded())) + "°"
+    
+    
+    let timeManager = TimeManager()
+    let dateFormatter = DateFormatter()
+    dateFormatter.timeZone = TimeZone(secondsFromGMT: timezone)
+    dateFormatter.dateFormat = "HH:mm"
+    let sunriseDate = timeManager.decodeUnixToGMTTime(sunrise ?? 0)
+    let sunsetDate = timeManager.decodeUnixToGMTTime(sunset ?? 0)
+    let sunriseString = dateFormatter.string(from: sunriseDate)
+    let sunsetString = dateFormatter.string(from: sunsetDate)
+    self.sunriseLabel.text = sunriseString
+    self.sunsetLabel.text = sunsetString
   }
 }
