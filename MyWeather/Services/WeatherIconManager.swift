@@ -10,19 +10,23 @@ import UIKit
 
 class WeatherIconManager {
   
-  func getIcon(with weatherCode: String) -> String {
+  func getIcon(with weatherCode: String) -> UIImage? {
     switch weatherCode {
-    case "01d": return "☀️"
-    case "01n": return "🌑"
-    case "02d": return "⛅️"
-    case "02n": return "☁️"
-    case "03d", "03n", "04d", "04n": return "☁️"
-    case "09d", "09n", "10d", "10n": return "🌧️"
-    case "11d", "11n": return "🌩️"
-    case "13d", "13n": return "❄️"
-    case "50d", "50n": return "💨"
+    case "01d": return UIImage(systemName: "sun.max.fill")
+    case "01n": return UIImage(systemName: "moon.stars.fill")
+    case "02d": return UIImage(systemName: "cloud.sun.fill")
+    case "02n": return UIImage(systemName: "cloud.moon.fill")
+    case "03d", "03n": return UIImage(systemName: "cloud.fill")
+    case "04d", "04n": return UIImage(systemName: "smoke.fill")
+    case "09d", "09n": return UIImage(systemName: "cloud.hail.fill")
+    case "10d": return UIImage(systemName: "cloud.sun.rain.fill")
+    case "10n": return UIImage(systemName: "cloud.moon.rain.fill")
+    case "11d": return UIImage(systemName: "cloud.moon.bolt.fill")
+    case "11n": return UIImage(systemName: "cloud.sun.bolt.fill")
+    case "13d", "13n": return UIImage(systemName: "snowflake")
+    case "50d", "50n": return UIImage(systemName: "aqi.medium")
     default:
-      return "01n"
+      return UIImage(systemName: "sun.max.fill")
     }
   }
 }

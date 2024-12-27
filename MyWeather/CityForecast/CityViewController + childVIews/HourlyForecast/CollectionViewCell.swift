@@ -10,7 +10,7 @@ import UIKit
 class CollectionViewCell: UICollectionViewCell {
   
   lazy private var timeLabel = UILabel()
-  lazy private var weatherIcon = UILabel()
+  lazy private var weatherIcon = UIImageView()
   lazy private var tempLabel = UILabel()
   
   override init(frame: CGRect) {
@@ -37,16 +37,17 @@ class CollectionViewCell: UICollectionViewCell {
     ])
   }
   
-  private func setupWeatherIcon(_ label: UILabel) {
-    label.text = "-"
-    label.font = .systemFont(ofSize: 28, weight: .regular)
-    label.textAlignment = .left
-    label.translatesAutoresizingMaskIntoConstraints = false
-    addSubview(label)
+  private func setupWeatherIcon(_ imageView: UIImageView) {
+    imageView.contentMode = .scaleToFill
+    imageView.tintColor = .white
+    imageView.translatesAutoresizingMaskIntoConstraints = false
+    addSubview(imageView)
     
     NSLayoutConstraint.activate([
-      label.centerXAnchor.constraint(equalTo: centerXAnchor),
-      label.centerYAnchor.constraint(equalTo: centerYAnchor)
+      imageView.heightAnchor.constraint(equalToConstant: 26),
+      imageView.widthAnchor.constraint(equalToConstant: 30),
+      imageView.centerXAnchor.constraint(equalTo: centerXAnchor),
+      imageView.centerYAnchor.constraint(equalTo: centerYAnchor)
     ])
   }
   
@@ -64,7 +65,7 @@ class CollectionViewCell: UICollectionViewCell {
   }
   
   func configure(time: Int, timezone: TimeZone?, weatherIcon: String, temp: Double) {
-    self.weatherIcon.text = WeatherIconManager().getIcon(with: weatherIcon)
+    self.weatherIcon.image = WeatherIconManager().getIcon(with: weatherIcon)
     
     self.tempLabel.text = String(Int(temp.rounded())) + "°"
     

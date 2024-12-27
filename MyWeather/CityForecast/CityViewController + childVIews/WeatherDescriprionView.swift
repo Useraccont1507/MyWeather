@@ -9,7 +9,7 @@ import UIKit
 
 class WeatherDescriprionView: UIView {
   
-  lazy private var weatherIcon = UILabel()
+  lazy private var weatherIcon = UIImageView()
   lazy private var weatherDescriprionLabel = UILabel()
   lazy private var tempLabel = UILabel()
   lazy private var separatorView = UIView()
@@ -34,16 +34,17 @@ class WeatherDescriprionView: UIView {
     fatalError("init(coder:) has not been implemented")
   }
   
-  private func setupWeatherIcon(_ label: UILabel) {
-    label.text = "-"
-    label.font = .systemFont(ofSize: 28, weight: .regular)
-    label.textAlignment = .left
-    label.translatesAutoresizingMaskIntoConstraints = false
-    addSubview(label)
+  private func setupWeatherIcon(_ imageView: UIImageView) {
+    imageView.contentMode = .scaleToFill
+    imageView.tintColor = .white
+    imageView.translatesAutoresizingMaskIntoConstraints = false
+    addSubview(imageView)
     
     NSLayoutConstraint.activate([
-      label.topAnchor.constraint(equalTo: topAnchor),
-      label.leadingAnchor.constraint(equalTo: leadingAnchor)
+      imageView.heightAnchor.constraint(equalToConstant: 40),
+      imageView.widthAnchor.constraint(equalToConstant: 50),
+      imageView.topAnchor.constraint(equalTo: topAnchor),
+      imageView.leadingAnchor.constraint(equalTo: leadingAnchor)
     ])
   }
   
@@ -56,7 +57,7 @@ class WeatherDescriprionView: UIView {
     addSubview(label)
     
     NSLayoutConstraint.activate([
-      label.topAnchor.constraint(equalTo: topAnchor),
+      label.centerYAnchor.constraint(equalTo: weatherIcon.centerYAnchor),
       label.leadingAnchor.constraint(equalTo: weatherIcon.trailingAnchor, constant: 4)
     ])
   }
@@ -70,7 +71,7 @@ class WeatherDescriprionView: UIView {
     addSubview(label)
     
     NSLayoutConstraint.activate([
-      label.topAnchor.constraint(equalTo: weatherDescriprionLabel.bottomAnchor),
+      label.topAnchor.constraint(equalTo: weatherIcon.bottomAnchor),
       label.leadingAnchor.constraint(equalTo: leadingAnchor)
     ])
   }
@@ -147,7 +148,7 @@ class WeatherDescriprionView: UIView {
   }
   
   func configure(icon: String, description: String, temp: Double, timezone: Int, sunrise: Int?, sunset: Int?) {
-    self.weatherIcon.text = WeatherIconManager().getIcon(with: icon)
+    self.weatherIcon.image = WeatherIconManager().getIcon(with: icon)
     
     self.weatherDescriprionLabel.text = description.capitalizeFirstWord()
     
