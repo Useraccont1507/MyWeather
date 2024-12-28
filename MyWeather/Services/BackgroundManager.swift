@@ -46,9 +46,7 @@ class BackgroundManager {
       ? [UIColor(red: 0.6, green: 0.7, blue: 0.8, alpha: 1).cgColor, UIColor(red: 0.8, green: 0.8, blue: 0.9, alpha: 1).cgColor]
       : [UIColor(red: 0.3, green: 0.4, blue: 0.5, alpha: 1).cgColor, UIColor(red: 0.1, green: 0.1, blue: 0.3, alpha: 1).cgColor]
     default:
-      gradientLayer.colors = isDay
-      ? [UIColor.white.cgColor, UIColor.white.cgColor]
-      : [UIColor.black.cgColor, UIColor.black.cgColor]
+      gradientLayer.colors = [UIColor.white.cgColor, UIColor.gray.cgColor]
     }
     
     gradientLayer.startPoint = CGPoint(x: 0, y: 0)
