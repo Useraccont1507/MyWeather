@@ -16,9 +16,11 @@
 "search_alert_message1" = "Do you want to add ";
 "search_alert_message2" = " to favorites places?";
 "cancel" = "cancel";
+"failed_to_load_cities" = "Failed to load cities. Check connection and try to reload";
 "favorites" = "Favotites";
 "edit" = "Edit";
 "done" = "Done";
+"loading" = "Loading";
 "hourly_forecast" = "Hourly forecast";
 "visibility" = "Visibility";
 "wind" = "Wind";
