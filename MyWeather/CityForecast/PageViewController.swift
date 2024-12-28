@@ -12,33 +12,35 @@ class PageViewController: UIPageViewController {
   private var pages: [CityViewController] = []
   private var currentPageIndex: Int = 0
   
-  lazy private var toolBar = UIToolbar()
+  lazy private var moveToListButton = UIButton()
   
   override func viewDidLoad() {
     super.viewDidLoad()
-    //setupToolBar(toolBar)
+    setupMoveToListButton(moveToListButton)
     self.dataSource = self
     navigationController?.setNavigationBarHidden(true, animated: true)
   }
   
-  func setupToolBar(_ bar: UIToolbar) {
-    bar.setItems([UIBarButtonItem(barButtonSystemItem: .organize, target: self, action: #selector(moveToList))], animated: true)
-    bar.barTintColor = .clear
-    bar.backgroundColor = .clear
-    bar.translatesAutoresizingMaskIntoConstraints = false
-    view.addSubview(bar)
+  func setupMoveToListButton(_ button: UIButton) {
+    button.setImage(UIImage(systemName: "list.bullet"), for: .normal)
+    button.contentVerticalAlignment = .fill
+    button.contentHorizontalAlignment = .fill
+    button.tintColor = .white
+    button.addTarget(self, action: #selector(moveToList), for: .touchUpInside)
+    button.translatesAutoresizingMaskIntoConstraints = false
+    view.addSubview(button)
     
     NSLayoutConstraint.activate([
-      bar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-      bar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-      bar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+      button.widthAnchor.constraint(equalToConstant: 28),
+      button.heightAnchor.constraint(equalToConstant: 16),
+      button.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+      button.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16)
     ])
-    
-    view.sendSubviewToBack(bar)
   }
   
   @objc private func moveToList() {
-    
+    navigationController?.popViewController(animated: true)
+    navigationController?.setNavigationBarHidden(false, animated: true)
   }
   
   func transferCities(_ cities: [CityCoordinates], pageIndex: Int) {

@@ -10,9 +10,8 @@ import UIKit
 class CityViewController: UIViewController {
   
   private var city: CityCoordinates?
-  private var timeZone: TimeZone?
-  private var visibility: Int?
   
+  private var loadingView: LoadingView?
   lazy private var scrollView = UIScrollView()
   lazy private var contentView = UIView()
   lazy private var cityLabel = UILabel()
@@ -21,6 +20,7 @@ class CityViewController: UIViewController {
   lazy private var hourlyForecastView = HourlyForecastView()
   lazy private var visibilityView = VisibilityView()
   lazy private var windView = WindView()
+  lazy private var mapView = Maps()
   
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -33,22 +33,24 @@ class CityViewController: UIViewController {
     setupHourlyForecastView(hourlyForecastView)
     setupVisibilityView(visibilityView)
     setupWindView(windView)
+    setupMapView(mapView)
   }
   
   private func getData() {
     guard let city = city else { return }
+    
+    showLoadingView()
+    
     WebManager.shared.fetchTempNow(for: city) { result in
-      switch result {
-      case .success(let success):
-        DispatchQueue.main.async {
+      DispatchQueue.main.async {
+        switch result {
+        case .success(let success):
           let layer = BackgroundManager().getBackground(for: success.weather.first!.id, sunrise: success.sys.sunrise ?? 0, sunset: success.sys.sunset ?? 0, frame: self.view.bounds)
           self.view.layer.insertSublayer(layer!, at: 0)
-          self.visibility = success.visibility
           let dateFormatter = DateFormatter()
           dateFormatter.dateFormat = "MMM d, HH:mm"
           let timezone = TimeZone(secondsFromGMT: success.timezone)
           
-          self.timeZone = timezone
           dateFormatter.timeZone = timezone
           let text = dateFormatter.string(from: Date.now)
           self.timeLabel.text = text
@@ -56,9 +58,13 @@ class CityViewController: UIViewController {
           self.weatherDescriprionView.configure(icon: success.weather.first!.icon, description: success.weather.first!.description, temp: success.main.temp, timezone: success.timezone, sunrise: success.sys.sunrise, sunset: success.sys.sunset)
           self.visibilityView.configure(visibility: success.visibility)
           self.windView.configure(wind: success.wind)
+          
+          self.dismissLoadingView()
+        case .failure(let failure):
+          print(failure)
+          let layer = BackgroundManager().getBackground(for: 0, sunrise: 0, sunset: 0, frame: self.view.bounds)
+          self.view.layer.insertSublayer(layer!, at: 0)
         }
-      case .failure(let failure):
-        print(failure)
       }
     }
   }
@@ -81,6 +87,12 @@ class CityViewController: UIViewController {
   private func setupScrollView(_ view: UIScrollView) {
     view.alwaysBounceVertical = true
     view.showsVerticalScrollIndicator = false
+    view.isUserInteractionEnabled = NetworkMonitor.shared.isConnected
+    
+    NetworkMonitor.shared.onStatusChange = { [weak self] isConnected in
+      self?.handleNetworkChange(isConnected: isConnected)
+    }
+    
     view.translatesAutoresizingMaskIntoConstraints = false
     self.view.addSubview(view)
     
@@ -106,7 +118,7 @@ class CityViewController: UIViewController {
   }
   
   private func setupCityLabel(_ label: UILabel) {
-    label.text = city?.name ?? "--"
+    label.text = city?.name ?? "-"
     label.font = .systemFont(ofSize: 28, weight: .semibold)
     label.textColor = .white
     label.textAlignment = .center
@@ -114,13 +126,12 @@ class CityViewController: UIViewController {
     contentView.addSubview(label)
     
     NSLayoutConstraint.activate([
-      label.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
+      label.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 48),
       label.centerXAnchor.constraint(equalTo: contentView.centerXAnchor)
     ])
   }
   
   private func setupTimeLabel(_ label: UILabel) {
-    label.text = "--- -, --:--"
     label.font = .systemFont(ofSize: 18, weight: .light)
     label.textColor = .white
     label.textAlignment = .center
@@ -182,7 +193,49 @@ class CityViewController: UIViewController {
     ])
   }
   
+  private func setupMapView(_ view: UIView) {
+    view.translatesAutoresizingMaskIntoConstraints = false
+    contentView.addSubview(view)
+    
+    NSLayoutConstraint.activate([
+      view.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+      view.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+      view.topAnchor.constraint(equalTo: visibilityView.bottomAnchor, constant: 16),
+      view.heightAnchor.constraint(equalToConstant: 200)
+    ])
+  }
+  
   func configure(_ city: CityCoordinates) {
     self.city = city
+  }
+  
+  private func handleNetworkChange(isConnected: Bool) {
+    if isConnected {
+      self.getData()
+      self.setupHourlyForecastView(hourlyForecastView)
+      self.view.layoutIfNeeded()
+    }
+  }
+}
+
+extension CityViewController {
+  func showLoadingView() {
+    if loadingView == nil {
+      let loading = LoadingView(frame: view.bounds)
+      view.addSubview(loading)
+      loading.translatesAutoresizingMaskIntoConstraints = false
+      NSLayoutConstraint.activate([
+        loading.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+        loading.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+        loading.topAnchor.constraint(equalTo: view.topAnchor),
+        loading.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+      ])
+      loadingView = loading
+    }
+  }
+  
+  func dismissLoadingView() {
+    loadingView?.removeFromSuperview()
+    loadingView = nil
   }
 }

@@ -49,7 +49,6 @@ class WeatherDescriprionView: UIView {
   }
   
   private func setupWeatherDescriprionLabel(_ label: UILabel) {
-    label.text = "--"
     label.font = .systemFont(ofSize: 28, weight: .regular)
     label.textColor = .white
     label.textAlignment = .left
@@ -63,7 +62,6 @@ class WeatherDescriprionView: UIView {
   }
   
   private func setupTempLabel(_ label: UILabel) {
-    label.text = "--°"
     label.font = .systemFont(ofSize: 120, weight: .regular)
     label.textColor = .white
     label.textAlignment = .left
@@ -77,7 +75,6 @@ class WeatherDescriprionView: UIView {
   }
   
   private func setupSunriseLabel(_ label: UILabel) {
-    label.text = "--:--"
     label.font = .systemFont(ofSize: 18, weight: .regular)
     label.textColor = .white
     label.textAlignment = .left
@@ -119,7 +116,6 @@ class WeatherDescriprionView: UIView {
   }
   
   private func setupSunsetLabel(_ label: UILabel) {
-    label.text = "--:--"
     label.font = .systemFont(ofSize: 18, weight: .regular)
     label.textColor = .white
     label.textAlignment = .left
@@ -167,3 +163,4 @@ class WeatherDescriprionView: UIView {
     self.sunsetLabel.text = sunsetString
   }
 }
+
