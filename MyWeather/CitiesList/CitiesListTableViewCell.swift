@@ -47,7 +47,7 @@ class CitiesListTableViewCell: UITableViewCell {
   
   private func setupCityLabel(_ label: UILabel) {
     label.font = .systemFont(ofSize: 40, weight: .regular)
-    label.textColor = .systemBackground
+    label.textColor = .white
     label.textAlignment = .left
     label.translatesAutoresizingMaskIntoConstraints = false
     
@@ -62,7 +62,7 @@ class CitiesListTableViewCell: UITableViewCell {
   
   private func setupTempLabel(_ label: UILabel) {
     label.font = .systemFont(ofSize: 40, weight: .regular)
-    label.textColor = .systemBackground
+    label.textColor = .white
     label.textAlignment = .right
     label.translatesAutoresizingMaskIntoConstraints = false
     
@@ -77,7 +77,7 @@ class CitiesListTableViewCell: UITableViewCell {
   
   private func setupWeahterDescpitionLabel(_ label: UILabel) {
     label.font = .systemFont(ofSize: 13, weight: .regular)
-    label.textColor = .systemBackground
+    label.textColor = .white
     label.textAlignment = .right
     label.translatesAutoresizingMaskIntoConstraints = false
     

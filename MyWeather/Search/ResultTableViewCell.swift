@@ -24,7 +24,7 @@ class ResultTableViewCell: UITableViewCell {
   
   private func setupMainLabel(_ label: UILabel) {
     label.font = .systemFont(ofSize: 17, weight: .regular)
-    label.textColor = .black
+    label.textColor = .colorForTextTheme
     label.textAlignment = .left
     label.translatesAutoresizingMaskIntoConstraints = false
     contentView.addSubview(label)
@@ -38,7 +38,7 @@ class ResultTableViewCell: UITableViewCell {
   
   private func setupSecondaryLabel(_ label: UILabel) {
     label.font = .systemFont(ofSize: 13, weight: .regular)
-    label.textColor = .black
+    label.textColor = .colorForTextTheme
     label.textAlignment = .left
     label.translatesAutoresizingMaskIntoConstraints = false
     contentView.addSubview(label)

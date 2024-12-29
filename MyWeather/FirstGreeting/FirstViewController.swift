@@ -26,7 +26,7 @@ class FirstViewController: UIViewController {
   private func setupMainGreetingLabel(_ label: UILabel) {
     label.text = "main_greeting".localized
     label.font = .systemFont(ofSize: 32, weight: .bold)
-    label.textColor = .black
+    label.textColor = .colorForTextTheme
     label.textAlignment = .center
     label.translatesAutoresizingMaskIntoConstraints = false
     view.addSubview(label)
@@ -42,7 +42,7 @@ class FirstViewController: UIViewController {
   private func setupSecondaryGreetingLabel(_ label: UILabel) {
     label.text = "secondary_greeting".localized
     label.font = .systemFont(ofSize: 20, weight: .semibold)
-    label.textColor = .black
+    label.textColor = .colorForTextTheme
     label.textAlignment = .center
     label.numberOfLines = 0
     label.translatesAutoresizingMaskIntoConstraints = false

@@ -24,14 +24,14 @@ class SearchCityViewController: UIViewController {
   
   override func viewDidLoad() {
     super.viewDidLoad()
-    view.backgroundColor = .white
+    view.backgroundColor = .systemBackground
     setupToolBar(toolBar)
     setupSearchBar(searchBar)
     setupTableView(resultTableView)
   }
   
   private func setupToolBar(_ bar: UIToolbar) {
-    bar.barTintColor = .white
+    bar.barTintColor = .systemBackground
     bar.translatesAutoresizingMaskIntoConstraints = false
     view.addSubview(bar)
     
@@ -41,8 +41,11 @@ class SearchCityViewController: UIViewController {
       bar.trailingAnchor.constraint(equalTo: view.trailingAnchor)
     ])
     
+    let cancel = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action:  #selector(dissmissViewController))
+    cancel.tintColor = .colorForTextTheme
+    
     toolBar.items = [
-      UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action:  #selector(dissmissViewController)),
+      cancel,
       UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
       UIBarButtonItem(customView: SearchTitleView()),
       UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)

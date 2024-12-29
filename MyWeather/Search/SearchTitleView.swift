@@ -25,7 +25,7 @@ class SearchTitleView: UIView {
     label.center = center
     label.text = "searchVC_title".localized
     label.font = .preferredFont(forTextStyle: .headline)
-    label.textColor = .black
+    label.textColor = .colorForTextTheme
     label.textAlignment = .center
     addSubview(label)
   }

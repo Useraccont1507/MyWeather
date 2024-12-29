@@ -26,16 +26,16 @@ class CitiesListViewController: UIViewController {
   private func setupViewController() {
     view.backgroundColor = .systemBackground
     self.title = "favorites".localized
-    self.navigationItem.hidesBackButton = true
     navigationController?.navigationBar.prefersLargeTitles = true
     self.navigationItem.largeTitleDisplayMode = .automatic
+    self.navigationItem.hidesBackButton = true
     let editButton = UIBarButtonItem(title: "edit".localized, style: .plain, target: self, action: #selector(showEditing))
-    editButton.tintColor = .black
+    editButton.tintColor = .colorForTextTheme
     navigationItem.rightBarButtonItem = editButton
   }
   
   private func setupToolBar(_ bar: UIToolbar) {
-    bar.barTintColor = .white
+    bar.barTintColor = .systemBackground
     bar.translatesAutoresizingMaskIntoConstraints = false
     view.addSubview(bar)
     
@@ -46,10 +46,10 @@ class CitiesListViewController: UIViewController {
     ])
     
     let toogleUnitsButton = UIBarButtonItem(title: "C° / F°", style: .plain, target: self, action: #selector(toogleUnits))
-    toogleUnitsButton.tintColor = .black
+    toogleUnitsButton.tintColor = UIColor(named: "colorForTextTheme")
     let spacer = UIBarButtonItem(systemItem: .flexibleSpace)
     let addButton = UIBarButtonItem(image: UIImage(systemName: "plus.circle"), style: .plain, target: self, action: #selector(moveToSearchVC))
-    addButton.tintColor = .black
+    addButton.tintColor = .colorForTextTheme
     
     bar.items = [toogleUnitsButton, spacer, addButton]
   }
