@@ -11,13 +11,16 @@ class PageViewController: UIPageViewController {
   
   private var pages: [CityViewController] = []
   private var currentPageIndex: Int = 0
+  private let pageControl = UIPageControl()
   
   lazy private var moveToListButton = UIButton()
   
   override func viewDidLoad() {
     super.viewDidLoad()
     setupMoveToListButton(moveToListButton)
+    setupPageControl(pageControl)
     self.dataSource = self
+    self.delegate = self
     navigationController?.setNavigationBarHidden(true, animated: true)
   }
   
@@ -38,10 +41,35 @@ class PageViewController: UIPageViewController {
     ])
   }
   
+  func setupPageControl(_ control: UIPageControl) {
+    control.backgroundColor = .gray.withAlphaComponent(0.3)
+    control.layer.cornerRadius = 12
+    control.numberOfPages = pages.count
+    control.currentPage = currentPageIndex
+    control.pageIndicatorTintColor = .lightGray
+    control.currentPageIndicatorTintColor = .white
+    control.addTarget(self, action: #selector(pageControlValueChanged), for: .valueChanged)
+    control.translatesAutoresizingMaskIntoConstraints = false
+    view.addSubview(control)
+    
+    NSLayoutConstraint.activate([
+      pageControl.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
+      pageControl.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+    ])
+  }
+  
   @objc private func moveToList() {
     navigationController?.popViewController(animated: true)
     navigationController?.setNavigationBarHidden(false, animated: true)
   }
+  
+  @objc private func pageControlValueChanged() {
+      let newPageIndex = pageControl.currentPage
+      let direction: UIPageViewController.NavigationDirection = newPageIndex > currentPageIndex ? .forward : .reverse
+      currentPageIndex = newPageIndex
+      setViewControllers([pages[newPageIndex]], direction: direction, animated: true, completion: nil)
+    }
+    
   
   func transferCities(_ cities: [CityCoordinates], pageIndex: Int) {
     cities.forEach { city in
@@ -49,7 +77,7 @@ class PageViewController: UIPageViewController {
       vc.configure(city)
       pages.append(vc)
     }
-    
+    pageControl.numberOfPages = pages.count
     setInitialPage(index: pageIndex)
   }
   
@@ -57,7 +85,7 @@ class PageViewController: UIPageViewController {
      guard index >= 0, index < pages.count else { return }
      currentPageIndex = index
      let initialPage = pages[index]
-     setViewControllers([initialPage], direction: .forward, animated: false, completion: nil)
+     setViewControllers([initialPage], direction: .forward, animated: true, completion: nil)
    }
 }
 
@@ -74,5 +102,14 @@ extension PageViewController: UIPageViewControllerDataSource {
           let currentIndex = pages.firstIndex(of: contentViewController),
           currentIndex < pages.count - 1 else { return nil }
     return pages[currentIndex + 1]
+  }
+}
+
+extension PageViewController: UIPageViewControllerDelegate {
+  func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
+    if completed, let visibleViewController = viewControllers?.first as? CityViewController, let index = pages.firstIndex(of: visibleViewController) {
+      currentPageIndex = index
+      pageControl.currentPage = currentPageIndex
+    }
   }
 }

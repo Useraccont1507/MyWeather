@@ -13,7 +13,6 @@ class CitiesListViewController: UIViewController {
   
   lazy private var tableView = UITableView()
   lazy private var toolBar = UIToolbar()
-  lazy private var failConnectionMessageView = FailConnectionMessageView()
   
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -22,7 +21,6 @@ class CitiesListViewController: UIViewController {
     cities = CitiesCoordinatesModel.shared.getAllCitiesCoordinates()
     setupToolBar(toolBar)
     setupTableView(tableView)
-    setupFailConnectionMessageView(failConnectionMessageView)
   }
   
   private func setupViewController() {
@@ -78,19 +76,6 @@ class CitiesListViewController: UIViewController {
       tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
       tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
       tableView.bottomAnchor.constraint(equalTo: toolBar.topAnchor)
-    ])
-  }
-  
-  private func setupFailConnectionMessageView(_ view: FailConnectionMessageView) {
-    view.isHidden = true
-    view.translatesAutoresizingMaskIntoConstraints = false
-    self.view.addSubview(view)
-    
-    NSLayoutConstraint.activate([
-      view.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 16),
-      view.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
-      view.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
-      view.heightAnchor.constraint(equalToConstant: 150)
     ])
   }
   
@@ -162,7 +147,6 @@ class CitiesListViewController: UIViewController {
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell") as? CitiesListTableViewCell else { fatalError("Expected CitiesListTableViewCell") }
     
-    cell.failConnectionDelegate = self
     cell.selectionStyle = .none
     cell.layoutIfNeeded()
     
@@ -200,11 +184,5 @@ extension CitiesListViewController: ReloadCitiesTableViewControllerDelegate {
   func reload() {
     self.cities = CitiesCoordinatesModel.shared.getAllCitiesCoordinates()
     self.tableView.reloadSections(IndexSet(integer: 0), with: .middle)
-  }
-}
-
-extension CitiesListViewController: PresentFailConnection {
-  func present() {
-    self.failConnectionMessageView.isHidden = false
   }
 }

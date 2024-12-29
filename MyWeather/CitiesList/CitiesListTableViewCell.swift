@@ -9,8 +9,6 @@ import UIKit
 
 class CitiesListTableViewCell: UITableViewCell {
   
-  weak var failConnectionDelegate: PresentFailConnection?
-  
   private var coordinates: CityCoordinates?
   
   lazy private var indicatorView = UIActivityIndicatorView(style: .medium)
