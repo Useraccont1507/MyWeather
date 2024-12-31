@@ -70,6 +70,7 @@ class WeatherDescriprionView: UIView {
     
     NSLayoutConstraint.activate([
       label.topAnchor.constraint(equalTo: weatherIcon.bottomAnchor),
+      label.bottomAnchor.constraint(equalTo: bottomAnchor),
       label.leadingAnchor.constraint(equalTo: leadingAnchor)
     ])
   }

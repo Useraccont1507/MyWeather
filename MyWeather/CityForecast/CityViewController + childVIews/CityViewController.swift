@@ -20,23 +20,29 @@ class CityViewController: UIViewController {
   lazy private var hourlyForecastView = HourlyForecastView()
   lazy private var visibilityView = VisibilityView()
   lazy private var windView = WindView()
-  lazy private var mapView = Maps()
   
   override func viewDidLoad() {
     super.viewDidLoad()
-    getData()
+    setupBackground()
+    
     setupScrollView(scrollView)
     setupContentView(contentView)
     setupCityLabel(cityLabel)
-    setupTimeLabel(timeLabel)
-    setupWeatherDescriprion(weatherDescriprionView)
-    setupHourlyForecastView(hourlyForecastView)
-    setupVisibilityView(visibilityView)
-    setupWindView(windView)
-    setupMapView(mapView)
+    getData {
+      self.setupTimeLabel(self.timeLabel)
+      self.setupWeatherDescriprion(self.weatherDescriprionView)
+      self.setupHourlyForecastView(self.hourlyForecastView)
+      self.setupVisibilityView(self.visibilityView)
+      self.setupWindView(self.windView)
+    }
   }
   
-  private func getData() {
+  func setupBackground() {
+    let layer = BackgroundManager().getBackground(for: nil, sunrise: nil, sunset: nil, frame: self.view.bounds)
+    self.view.layer.insertSublayer(layer!, at: 0)
+  }
+  
+  private func getData(_ completion: @escaping () -> Void) {
     guard let city = city else { return }
     
     showLoadingView()
@@ -45,7 +51,13 @@ class CityViewController: UIViewController {
       DispatchQueue.main.async {
         switch result {
         case .success(let success):
-          let layer = BackgroundManager().getBackground(for: success.weather.first!.id, sunrise: success.sys.sunrise ?? 0, sunset: success.sys.sunset ?? 0, frame: self.view.bounds)
+          self.view.layer.sublayers?.forEach { layer in
+            if layer is CAGradientLayer {
+              layer.removeFromSuperlayer()
+            }
+          }
+          
+          let layer = BackgroundManager().getBackground(for: success.weather.first?.id, sunrise: success.sys.sunrise, sunset: success.sys.sunset, frame: self.view.bounds)
           self.view.layer.insertSublayer(layer!, at: 0)
           let dateFormatter = DateFormatter()
           dateFormatter.dateFormat = "MMM d, HH:mm"
@@ -58,12 +70,10 @@ class CityViewController: UIViewController {
           self.weatherDescriprionView.configure(icon: success.weather.first!.icon, description: success.weather.first!.description, temp: success.main.temp, timezone: success.timezone, sunrise: success.sys.sunrise, sunset: success.sys.sunset)
           self.visibilityView.configure(visibility: success.visibility)
           self.windView.configure(wind: success.wind)
-          
+          completion()
           self.dismissLoadingView()
         case .failure(let failure):
           print(failure)
-          let layer = BackgroundManager().getBackground(for: 0, sunrise: 0, sunset: 0, frame: self.view.bounds)
-          self.view.layer.insertSublayer(layer!, at: 0)
         }
       }
     }
@@ -178,7 +188,8 @@ class CityViewController: UIViewController {
     NSLayoutConstraint.activate([
       view.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor, constant: 16),
       view.trailingAnchor.constraint(equalTo: self.contentView.centerXAnchor, constant: -8),
-      view.topAnchor.constraint(equalTo: weatherDescriprionView.bottomAnchor, constant: 186)
+      view.topAnchor.constraint(equalTo: weatherDescriprionView.bottomAnchor, constant: 186),
+      view.heightAnchor.constraint(equalToConstant: 154)
     ])
   }
   
@@ -189,19 +200,8 @@ class CityViewController: UIViewController {
     NSLayoutConstraint.activate([
       view.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor, constant: -16),
       view.leadingAnchor.constraint(equalTo: self.contentView.centerXAnchor, constant: 8),
-      view.topAnchor.constraint(equalTo: weatherDescriprionView.bottomAnchor, constant: 186)
-    ])
-  }
-  
-  private func setupMapView(_ view: UIView) {
-    view.translatesAutoresizingMaskIntoConstraints = false
-    contentView.addSubview(view)
-    
-    NSLayoutConstraint.activate([
-      view.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-      view.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-      view.topAnchor.constraint(equalTo: visibilityView.bottomAnchor, constant: 16),
-      view.heightAnchor.constraint(equalToConstant: 200)
+      view.topAnchor.constraint(equalTo: weatherDescriprionView.bottomAnchor, constant: 186),
+      view.heightAnchor.constraint(equalToConstant: 154)
     ])
   }
   
@@ -211,7 +211,13 @@ class CityViewController: UIViewController {
   
   private func handleNetworkChange(isConnected: Bool) {
     if isConnected {
-      self.getData()
+      self.getData {
+        self.setupTimeLabel(self.timeLabel)
+        self.setupWeatherDescriprion(self.weatherDescriprionView)
+        self.setupHourlyForecastView(self.hourlyForecastView)
+        self.setupVisibilityView(self.visibilityView)
+        self.setupWindView(self.windView)
+      }
       self.setupHourlyForecastView(hourlyForecastView)
       self.view.layoutIfNeeded()
     }

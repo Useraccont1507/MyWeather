@@ -59,7 +59,7 @@ class CollectionViewCell: UICollectionViewCell {
     contentView.addSubview(label)
     
     NSLayoutConstraint.activate([
-      label.topAnchor.constraint(equalTo: weatherIcon.bottomAnchor),
+      label.topAnchor.constraint(equalTo: weatherIcon.bottomAnchor, constant: 8),
       label.centerXAnchor.constraint(equalTo: contentView.centerXAnchor)
     ])
   }
