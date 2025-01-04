@@ -23,12 +23,18 @@ class CitiesListViewController: UIViewController {
     setupTableView(tableView)
   }
   
+  override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
+    navigationController?.navigationBar.prefersLargeTitles = true
+    self.navigationItem.largeTitleDisplayMode = .automatic
+  }
+  
   private func setupViewController() {
     view.backgroundColor = .systemBackground
     self.title = "favorites".localized
     navigationController?.navigationBar.prefersLargeTitles = true
     self.navigationItem.largeTitleDisplayMode = .automatic
-    self.navigationItem.hidesBackButton = true
+    navigationItem.hidesBackButton = true
     let editButton = UIBarButtonItem(title: "edit".localized, style: .plain, target: self, action: #selector(showEditing))
     editButton.tintColor = .colorForTextTheme
     navigationItem.rightBarButtonItem = editButton
@@ -55,11 +61,11 @@ class CitiesListViewController: UIViewController {
   }
   
   private func setupTableView(_ tableView: UITableView) {
+    tableView.contentInsetAdjustmentBehavior = .automatic
     tableView.delegate = self
     tableView.dataSource = self
     tableView.register(CitiesListTableViewCell.self, forCellReuseIdentifier: "cell")
     tableView.separatorStyle = .none
-    tableView.isUserInteractionEnabled = NetworkMonitor.shared.isConnected
     
     NetworkMonitor.shared.onStatusChange = { [weak self] isConnected in
       self?.handleNetworkChange(isConnected: isConnected)
@@ -132,14 +138,16 @@ class CitiesListViewController: UIViewController {
   }
   
   private func handleNetworkChange(isConnected: Bool) {
-    tableView.isUserInteractionEnabled = isConnected
     if isConnected {
-      tableView.reloadData()
+      self.tableView.reloadData()
+      self.toolBar.items?.first?.isEnabled = true
+    } else {
+      self.toolBar.items?.first?.isEnabled = false
     }
   }
 }
-  
-  extension CitiesListViewController: UITableViewDataSource {
+
+extension CitiesListViewController: UITableViewDataSource {
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     return cities.count
   }
@@ -151,12 +159,7 @@ class CitiesListViewController: UIViewController {
     cell.layoutIfNeeded()
     
     let coordinates = cities[indexPath.row]
-    
-    cell.configure(coordinates: coordinates) { isSuccesful in
-      DispatchQueue.main.async {
-        cell.isUserInteractionEnabled = isSuccesful
-      }
-    }
+    cell.configure(coordinates: coordinates, indexPath: indexPath, tableView: tableView)
     return cell
   }
 }

@@ -19,11 +19,20 @@ class CitiesListTableViewCell: UITableViewCell {
   
   override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
     super.init(style: style, reuseIdentifier: reuseIdentifier)
-    setupIndicator(indicatorView)
     setupRoundedRectangleView(roundedRectangleView)
     setupTempLabel(tempLabel)
     setupCityLabel(cityLabel)
     setupWeahterDescpitionLabel(weatherDescpitionLabel)
+    setupIndicator(indicatorView)
+  }
+  
+  override func prepareForReuse() {
+    super.prepareForReuse()
+    cityLabel.text = nil
+    tempLabel.text = nil
+    weatherDescpitionLabel.text = nil
+    removeBackgroundLayers(from: roundedRectangleView)
+    indicatorView.stopAnimating()
   }
   
   required init?(coder: NSCoder) {
@@ -31,6 +40,8 @@ class CitiesListTableViewCell: UITableViewCell {
   }
   
   private func setupRoundedRectangleView(_ rectangle: UIView) {
+    let layer = BackgroundManager().getBackground(for: nil, sunrise: nil, sunset: nil, frame: self.roundedRectangleView.bounds)
+    rectangle.layer.insertSublayer(layer!, at: 0)
     rectangle.layer.cornerRadius = 24
     rectangle.layer.masksToBounds = true
     rectangle.translatesAutoresizingMaskIntoConstraints = false
@@ -98,8 +109,8 @@ class CitiesListTableViewCell: UITableViewCell {
     contentView.addSubview(indicator)
     
     NSLayoutConstraint.activate([
-      indicator.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-      indicator.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
+      indicator.trailingAnchor.constraint(equalTo: roundedRectangleView.trailingAnchor, constant: -16),
+      indicator.centerYAnchor.constraint(equalTo: self.cityLabel.centerYAnchor)
     ])
     
     indicator.startAnimating()
@@ -113,7 +124,7 @@ class CitiesListTableViewCell: UITableViewCell {
     }
   }
   
-  func configure(coordinates: CityCoordinates, completion: @escaping (Bool) -> ()) {
+  func configure(coordinates: CityCoordinates, indexPath: IndexPath, tableView: UITableView) {
     self.coordinates = coordinates
     if coordinates.name.count >= 10 {
       cityLabel.font = .systemFont(ofSize: 32, weight: .regular)
@@ -127,24 +138,27 @@ class CitiesListTableViewCell: UITableViewCell {
     roundedRectangleView.layoutIfNeeded()
     
     
-    if coordinates.lat == self.coordinates!.lat {
-      WebManager.shared.fetchTempNow(for: coordinates) { result in
-        DispatchQueue.main.async {
-          switch result {
-          case .success(let success):
-            self.tempLabel.text = String(Int(success.main.temp.rounded())) + "°"
-            self.tempLabel.layoutIfNeeded()
-            
-            self.weatherDescpitionLabel.text = success.weather.first?.description.capitalizeFirstWord()
-            
-            let layer = BackgroundManager().getBackground(for: success.weather.first!.id, sunrise: success.sys.sunrise ?? 0, sunset: success.sys.sunset ?? 0, frame: self.roundedRectangleView.bounds)
-            self.roundedRectangleView.layer.insertSublayer(layer!, at: 0)
-            completion(true)
-          case .failure(let failure):
-            print(failure)
-            self.indicatorView.startAnimating()
-            completion(false)
-          }
+    
+    WebManager.shared.fetchTempNow(for: coordinates) { result in
+      DispatchQueue.main.async {
+        
+        guard let currentCell = tableView.cellForRow(at: indexPath) as? CitiesListTableViewCell,
+              currentCell === self else {
+          return
+        }
+        
+        switch result {
+        case .success(let success):
+          self.tempLabel.text = String(Int(success.main.temp.rounded())) + "°"
+          self.tempLabel.layoutIfNeeded()
+          
+          self.weatherDescpitionLabel.text = success.weather.first?.description.capitalizeFirstWord()
+          
+          let layer = BackgroundManager().getBackground(for: success.weather.first?.id, sunrise: success.sys.sunrise, sunset: success.sys.sunset , frame: self.roundedRectangleView.bounds)
+          self.roundedRectangleView.layer.insertSublayer(layer!, at: 0)
+        case .failure(let failure):
+          print(failure)
+          self.indicatorView.startAnimating()
         }
       }
     }
