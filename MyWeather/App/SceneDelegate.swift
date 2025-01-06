@@ -18,7 +18,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     let window = UIWindow(windowScene: scene)
-    var nav = UINavigationController()
+    var nav: UINavigationController
     if Storage.shared.isFirstEnter() {
       nav = UINavigationController(rootViewController: FirstViewController())
     } else {
