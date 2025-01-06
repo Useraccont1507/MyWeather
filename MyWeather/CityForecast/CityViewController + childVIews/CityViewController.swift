@@ -10,30 +10,34 @@ import UIKit
 class CityViewController: UIViewController {
   
   private var city: CityCoordinates?
+  private var timezone: TimeZone?
   
   private var loadingView: LoadingView?
   lazy private var scrollView = UIScrollView()
   lazy private var contentView = UIView()
   lazy private var cityLabel = UILabel()
   lazy private var timeLabel = UILabel()
-  lazy private var weatherDescriprionView = WeatherDescriprionView()
+  lazy private var weatherDescriptionView = WeatherDescriprionView()
   lazy private var hourlyForecastView = HourlyForecastView()
   lazy private var visibilityView = VisibilityView()
   lazy private var windView = WindView()
+  lazy private var pressureView = PressureAndHumidityReusableView()
+  lazy private var humidityView = PressureAndHumidityReusableView()
   
   override func viewDidLoad() {
     super.viewDidLoad()
     setupBackground()
-    
     setupScrollView(scrollView)
     setupContentView(contentView)
     setupCityLabel(cityLabel)
     getData {
       self.setupTimeLabel(self.timeLabel)
-      self.setupWeatherDescriprion(self.weatherDescriprionView)
+      self.setupWeatherDescription(self.weatherDescriptionView)
       self.setupHourlyForecastView(self.hourlyForecastView)
       self.setupVisibilityView(self.visibilityView)
       self.setupWindView(self.windView)
+      self.setupPressureView(self.pressureView)
+      self.setupHumidityView(self.humidityView)
     }
   }
   
@@ -62,14 +66,17 @@ class CityViewController: UIViewController {
           let dateFormatter = DateFormatter()
           dateFormatter.dateFormat = "MMM d, HH:mm"
           let timezone = TimeZone(secondsFromGMT: success.timezone)
+          self.timezone = timezone
           
           dateFormatter.timeZone = timezone
           let text = dateFormatter.string(from: Date.now)
           self.timeLabel.text = text
           
-          self.weatherDescriprionView.configure(icon: success.weather.first!.icon, description: success.weather.first!.description, temp: success.main.temp, timezone: success.timezone, sunrise: success.sys.sunrise, sunset: success.sys.sunset)
+          self.weatherDescriptionView.configure(icon: success.weather.first!.icon, description: success.weather.first!.description, temp: success.main.temp, timezone: success.timezone, sunrise: success.sys.sunrise, sunset: success.sys.sunset)
           self.visibilityView.configure(visibility: success.visibility)
           self.windView.configure(wind: success.wind)
+          self.pressureView.configure(value: success.main.pressure, image: UIImage(systemName: "aqi.medium"), title: "pressure".localized)
+          self.humidityView.configure(value: success.main.humidity, image: UIImage(systemName: "humidity.fill"), title: "humidity".localized)
           completion()
           self.dismissLoadingView()
         case .failure(let failure):
@@ -85,7 +92,7 @@ class CityViewController: UIViewController {
       switch result {
       case .success(let success):
         DispatchQueue.main.async {
-          self.hourlyForecastView.configure(list: success.list)
+          self.hourlyForecastView.configure(list: success.list, timezone: self.timezone)
           completion()
         }
       case .failure(let failure):
@@ -95,6 +102,7 @@ class CityViewController: UIViewController {
   }
   
   private func setupScrollView(_ view: UIScrollView) {
+    view.bouncesZoom = false
     view.alwaysBounceVertical = true
     view.showsVerticalScrollIndicator = false
     view.isUserInteractionEnabled = NetworkMonitor.shared.isConnected
@@ -123,7 +131,7 @@ class CityViewController: UIViewController {
       contentView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
       contentView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
       contentView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
-      contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
+      contentView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor)
     ])
   }
   
@@ -154,7 +162,7 @@ class CityViewController: UIViewController {
     ])
   }
   
-  private func setupWeatherDescriprion(_ view: WeatherDescriprionView) {
+  private func setupWeatherDescription(_ view: WeatherDescriprionView) {
     view.translatesAutoresizingMaskIntoConstraints = false
     contentView.addSubview(view)
     
@@ -168,14 +176,14 @@ class CityViewController: UIViewController {
   
   private func setupHourlyForecastView(_ view: HourlyForecastView) {
     getDataHourly {
+      self.contentView.bringSubviewToFront(view)
       view.translatesAutoresizingMaskIntoConstraints = false
       self.contentView.addSubview(view)
       
       NSLayoutConstraint.activate([
         view.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor, constant: 16),
         view.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor, constant: -16),
-        view.topAnchor.constraint(equalTo: self.weatherDescriprionView.bottomAnchor, constant: 16),
-        view.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor),
+        view.topAnchor.constraint(equalTo: self.weatherDescriptionView.bottomAnchor, constant: 16),
         view.heightAnchor.constraint(equalToConstant: 154)
       ])
     }
@@ -188,8 +196,8 @@ class CityViewController: UIViewController {
     NSLayoutConstraint.activate([
       view.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor, constant: 16),
       view.trailingAnchor.constraint(equalTo: self.contentView.centerXAnchor, constant: -8),
-      view.topAnchor.constraint(equalTo: weatherDescriprionView.bottomAnchor, constant: 186),
-      view.heightAnchor.constraint(equalToConstant: 154)
+      view.topAnchor.constraint(equalTo: weatherDescriptionView.bottomAnchor, constant: 186),
+      view.heightAnchor.constraint(equalToConstant: 114)
     ])
   }
   
@@ -200,8 +208,33 @@ class CityViewController: UIViewController {
     NSLayoutConstraint.activate([
       view.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor, constant: -16),
       view.leadingAnchor.constraint(equalTo: self.contentView.centerXAnchor, constant: 8),
-      view.topAnchor.constraint(equalTo: weatherDescriprionView.bottomAnchor, constant: 186),
-      view.heightAnchor.constraint(equalToConstant: 154)
+      view.topAnchor.constraint(equalTo: weatherDescriptionView.bottomAnchor, constant: 186),
+      view.heightAnchor.constraint(equalToConstant: 114)
+    ])
+  }
+  
+  private func setupPressureView(_ view: PressureAndHumidityReusableView) {
+    view.translatesAutoresizingMaskIntoConstraints = false
+    contentView.addSubview(view)
+    
+    NSLayoutConstraint.activate([
+      view.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+      view.trailingAnchor.constraint(equalTo: self.contentView.centerXAnchor, constant: -8),
+      view.topAnchor.constraint(equalTo: windView.bottomAnchor, constant: 16),
+      view.heightAnchor.constraint(equalToConstant: 114)
+    ])
+  }
+  
+  private func setupHumidityView(_ view: PressureAndHumidityReusableView) {
+    view.translatesAutoresizingMaskIntoConstraints = false
+    contentView.addSubview(view)
+    
+    NSLayoutConstraint.activate([
+      view.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor, constant: -16),
+      view.leadingAnchor.constraint(equalTo: self.contentView.centerXAnchor, constant: 8),
+      view.topAnchor.constraint(equalTo: windView.bottomAnchor, constant: 16),
+      view.heightAnchor.constraint(equalToConstant: 114),
+      view.bottomAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.bottomAnchor)
     ])
   }
   
@@ -213,12 +246,13 @@ class CityViewController: UIViewController {
     if isConnected {
       self.getData {
         self.setupTimeLabel(self.timeLabel)
-        self.setupWeatherDescriprion(self.weatherDescriprionView)
+        self.setupWeatherDescription(self.weatherDescriptionView)
         self.setupHourlyForecastView(self.hourlyForecastView)
         self.setupVisibilityView(self.visibilityView)
         self.setupWindView(self.windView)
+        self.setupPressureView(self.pressureView)
+        self.setupHumidityView(self.humidityView)
       }
-      self.setupHourlyForecastView(hourlyForecastView)
       self.view.layoutIfNeeded()
     }
   }

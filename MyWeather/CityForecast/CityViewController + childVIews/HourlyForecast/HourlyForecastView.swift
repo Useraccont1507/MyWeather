@@ -90,8 +90,9 @@ class HourlyForecastView: UIView {
     ])
   }
   
-  func configure(list: [List]) {
+  func configure(list: [List], timezone: TimeZone?) {
     self.weatherList = list
+    self.timezone = timezone
   }
 }
 
