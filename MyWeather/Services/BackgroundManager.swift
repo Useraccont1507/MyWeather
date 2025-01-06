@@ -38,7 +38,9 @@ class BackgroundManager {
         : [UIColor(red: 0.2, green: 0.3, blue: 0.5, alpha: 1).cgColor, UIColor.black.cgColor]
       case 600...622: // Snow
         gradientLayer.colors = isDay
-        ? [UIColor.white.cgColor, UIColor(red: 0.8, green: 0.8, blue: 0.9, alpha: 1).cgColor]
+        ? [
+          UIColor(red: 0.9, green: 0.9, blue: 0.9, alpha: 1).cgColor,
+          UIColor(red: 0.7, green: 0.7, blue: 0.8, alpha: 1).cgColor]
         : [UIColor(red: 0.6, green: 0.6, blue: 0.7, alpha: 1).cgColor, UIColor(red: 0.3, green: 0.3, blue: 0.4, alpha: 1).cgColor]
       case 800: // Clear
         gradientLayer.colors = isDay
