@@ -149,6 +149,7 @@
 				DEVELOPMENT_TEAM = 6GA6W2287X;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MyWeather/Info.plist;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We need your location to provide accurate weather updates.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = SceneDelegate.swift;
 				INFOPLIST_KEY_UIMainStoryboardFile = "";
@@ -178,6 +179,7 @@
 				DEVELOPMENT_TEAM = 6GA6W2287X;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MyWeather/Info.plist;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We need your location to provide accurate weather updates.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = SceneDelegate.swift;
 				INFOPLIST_KEY_UIMainStoryboardFile = "";

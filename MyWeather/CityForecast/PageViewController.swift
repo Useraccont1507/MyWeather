@@ -61,6 +61,8 @@ class PageViewController: UIPageViewController {
   @objc private func moveToList() {
     navigationController?.popViewController(animated: true)
     navigationController?.setNavigationBarHidden(false, animated: true)
+    navigationController?.navigationBar.prefersLargeTitles = true
+    self.navigationItem.largeTitleDisplayMode = .automatic
   }
   
   @objc private func pageControlValueChanged() {

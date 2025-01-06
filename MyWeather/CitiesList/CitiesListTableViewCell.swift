@@ -135,7 +135,7 @@ class CitiesListTableViewCell: UITableViewCell {
     cityLabel.text = coordinates.name
     
     removeBackgroundLayers(from: roundedRectangleView)
-    roundedRectangleView.layoutIfNeeded()
+    roundedRectangleView.setNeedsLayout()
     
     
     
@@ -150,7 +150,7 @@ class CitiesListTableViewCell: UITableViewCell {
         switch result {
         case .success(let success):
           self.tempLabel.text = String(Int(success.main.temp.rounded())) + "°"
-          self.tempLabel.layoutIfNeeded()
+          self.tempLabel.setNeedsLayout()
           
           self.weatherDescpitionLabel.text = success.weather.first?.description.capitalizeFirstWord()
           

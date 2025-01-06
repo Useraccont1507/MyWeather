@@ -19,14 +19,8 @@ class CitiesListViewController: UIViewController {
     setupViewController()
     CitiesCoordinatesModel.shared.loadCitiesCoordinatesFromStorage(coordinates: Storage.shared.loadCityCoordinates())
     cities = CitiesCoordinatesModel.shared.getAllCitiesCoordinates()
-    setupToolBar(toolBar)
     setupTableView(tableView)
-  }
-  
-  override func viewWillAppear(_ animated: Bool) {
-    super.viewWillAppear(animated)
-    navigationController?.navigationBar.prefersLargeTitles = true
-    self.navigationItem.largeTitleDisplayMode = .automatic
+    setupToolBar(toolBar)
   }
   
   private func setupViewController() {
@@ -81,7 +75,7 @@ class CitiesListViewController: UIViewController {
       tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
       tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
       tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-      tableView.bottomAnchor.constraint(equalTo: toolBar.topAnchor)
+      tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
     ])
   }
   
@@ -186,6 +180,6 @@ extension CitiesListViewController: UITableViewDelegate {
 extension CitiesListViewController: ReloadCitiesTableViewControllerDelegate {
   func reload() {
     self.cities = CitiesCoordinatesModel.shared.getAllCitiesCoordinates()
-    self.tableView.reloadSections(IndexSet(integer: 0), with: .middle)
+    self.tableView.reloadData()
   }
 }
