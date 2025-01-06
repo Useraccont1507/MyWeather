@@ -125,11 +125,12 @@ extension SearchCityViewController: UITableViewDelegate {
     let alertController = UIAlertController(title: "search_alert_title".localized, message: "search_alert_message1".localized + resultForTableView[indexPath.row].name + "search_alert_message2".localized, preferredStyle: .alert)
     let cancelAction = UIAlertAction(title: "cancel".localized, style: .cancel)
     let action = UIAlertAction(title: "OK", style: .default) { _ in
-      CitiesCoordinatesModel.shared.addCityCoordinatesToArray(self.resultForTableView[indexPath.row])
-      Storage.shared.saveCityCoordinates(CitiesCoordinatesModel.shared.getAllCitiesCoordinates())
-      self.dissmissViewController()
-      self.delegateFirstViewController?.pushFromSelf()
-      self.delegateReloadCities?.reload()
+      CitiesCoordinatesModel.shared.addCityCoordinatesToArray(self.resultForTableView[indexPath.row]) {
+              Storage.shared.saveCityCoordinates(CitiesCoordinatesModel.shared.getAllCitiesCoordinates())
+              self.delegateFirstViewController?.pushFromSelf()
+              self.delegateReloadCities?.reload()
+              self.dissmissViewController()
+          }
     }
     alertController.addAction(action)
     alertController.addAction(cancelAction)

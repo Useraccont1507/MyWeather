@@ -209,8 +209,9 @@ class CitiesCoordinatesModel {
     coordinates
   }
   
-  func addCityCoordinatesToArray(_ cityElement: CityElement) {
-    coordinates.append(CityCoordinates(name: cityElement.name, lat: cityElement.lat, lon: cityElement.lon))
+  func addCityCoordinatesToArray(_ cityElement: CityElement, completion: @escaping () -> Void) {
+      coordinates.append(CityCoordinates(name: cityElement.name, lat: cityElement.lat, lon: cityElement.lon))
+      completion()
   }
   
   func deleteCityCoordinates(_ index: Int) {
