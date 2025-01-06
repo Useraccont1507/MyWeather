@@ -24,6 +24,9 @@
 "hourly_forecast" = "Hourly forecast";
 "visibility" = "Visibility";
 "wind" = "Wind";
+"pressure" = "Pressure";
+"humidity" = "Humidity";
+"pressure_unit" = "hPa";
 "N" = "N";
 "NNE" = "NNE";
 "NE" = "NE";

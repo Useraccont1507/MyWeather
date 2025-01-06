@@ -24,6 +24,9 @@
 "hourly_forecast" = "Погодинний прогноз";
 "visibility" = "Видимість";
 "wind" = "Вітер";
+"pressure" = "Тиск";
+"humidity" = "Вологість";
+"pressure_unit" = "гПа";
 "N" = "Пн";
 "NNE" = "ПнПнС";
 "NE" = "ПнСх";
