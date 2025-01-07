@@ -30,15 +30,14 @@ class CityViewController: UIViewController {
     setupScrollView(scrollView)
     setupContentView(contentView)
     setupCityLabel(cityLabel)
-    getData {
-      self.setupTimeLabel(self.timeLabel)
-      self.setupWeatherDescription(self.weatherDescriptionView)
-      self.setupHourlyForecastView(self.hourlyForecastView)
-      self.setupVisibilityView(self.visibilityView)
-      self.setupWindView(self.windView)
-      self.setupPressureView(self.pressureView)
-      self.setupHumidityView(self.humidityView)
-    }
+    setupTimeLabel(timeLabel)
+    setupWeatherDescription(weatherDescriptionView)
+    setupHourlyForecastView(hourlyForecastView)
+    setupVisibilityView(visibilityView)
+    setupWindView(windView)
+    setupPressureView(pressureView)
+    setupHumidityView(humidityView)
+    getData()
   }
   
   func setupBackground() {
@@ -46,7 +45,7 @@ class CityViewController: UIViewController {
     self.view.layer.insertSublayer(layer!, at: 0)
   }
   
-  private func getData(_ completion: @escaping () -> Void) {
+  private func getData() {
     guard let city = city else { return }
     
     showLoadingView()
@@ -77,7 +76,6 @@ class CityViewController: UIViewController {
           self.windView.configure(wind: success.wind)
           self.pressureView.configure(value: success.main.pressure, image: UIImage(systemName: "aqi.medium"), title: "pressure".localized)
           self.humidityView.configure(value: success.main.humidity, image: UIImage(systemName: "humidity.fill"), title: "humidity".localized)
-          completion()
           self.dismissLoadingView()
         case .failure(let failure):
           print(failure)
@@ -175,7 +173,6 @@ class CityViewController: UIViewController {
   }
   
   private func setupHourlyForecastView(_ view: HourlyForecastView) {
-    getDataHourly {
       self.contentView.bringSubviewToFront(view)
       view.translatesAutoresizingMaskIntoConstraints = false
       self.contentView.addSubview(view)
@@ -186,6 +183,9 @@ class CityViewController: UIViewController {
         view.topAnchor.constraint(equalTo: self.weatherDescriptionView.bottomAnchor, constant: 16),
         view.heightAnchor.constraint(equalToConstant: 154)
       ])
+    
+    getDataHourly {
+      self.hourlyForecastView.reloadCollection()
     }
   }
   
@@ -244,15 +244,7 @@ class CityViewController: UIViewController {
   
   private func handleNetworkChange(isConnected: Bool) {
     if isConnected {
-      self.getData {
-        self.setupTimeLabel(self.timeLabel)
-        self.setupWeatherDescription(self.weatherDescriptionView)
-        self.setupHourlyForecastView(self.hourlyForecastView)
-        self.setupVisibilityView(self.visibilityView)
-        self.setupWindView(self.windView)
-        self.setupPressureView(self.pressureView)
-        self.setupHumidityView(self.humidityView)
-      }
+      getData()
       self.view.layoutIfNeeded()
     }
   }

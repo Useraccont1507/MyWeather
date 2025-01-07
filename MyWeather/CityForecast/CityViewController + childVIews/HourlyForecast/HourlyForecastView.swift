@@ -78,7 +78,6 @@ class HourlyForecastView: UIView {
     collection.showsHorizontalScrollIndicator = false
     collection.register(CollectionViewCell.self, forCellWithReuseIdentifier: "cell")
     collection.dataSource = self
-    collection.delegate = self
     collection.translatesAutoresizingMaskIntoConstraints = false
     addSubview(collection)
     
@@ -93,6 +92,10 @@ class HourlyForecastView: UIView {
   func configure(list: [List], timezone: TimeZone?) {
     self.weatherList = list
     self.timezone = timezone
+  }
+  
+  func reloadCollection() {
+    collectionView.reloadData()
   }
 }
 
@@ -112,6 +115,3 @@ extension HourlyForecastView: UICollectionViewDataSource {
   }
 }
 
-extension HourlyForecastView: UICollectionViewDelegate {
-  
-}
