@@ -45,6 +45,9 @@ The app supports **English** and **Ukrainian** localizations.
   <img src="https://github.com/Useraccont1507/MyWeather/blob/main/screenshots.png" alt="Screenshots" width="1000"/>
 </p>
 
+## Video presentation
+[Google drive](https://drive.google.com/file/d/1Q3kHGFLUff2Cr-5USfRAp3ezWj8GCK0u/view?usp=sharing)
+
 
 ## 🚀 Instalation
 Clone repo:
