@@ -8,15 +8,15 @@ MyWeather App is a modern and efficient tool for checking weather conditions any
 Featuring an intuitive design, a dynamic gradient background that reflects current weather, and real-time data powered by leading APIs, this app ensures you’re always informed and ready for any weather.  
 
 ## ⛅️ Easy access to weahter conditions:
-- Weather now
-- temperature now
-- desprition of conditions
-- sunrise / sunset time
-- hourly forecast
-- visibility
-- wind
-- humidity
-- air pressure
+- **Weather now**
+- **Temperature now**
+- **Desprition of conditions**
+- **Sunrise / sunset time**
+- **Hourly forecast**
+- **Visibility**
+- **Wind**
+- **Humidity**
+- **Air pressure**
 
 ## 🔑 Features  
 - 🌦 **Detailed Weather Information:** Temperature, humidity, wind speed, and other essential parameters.  
