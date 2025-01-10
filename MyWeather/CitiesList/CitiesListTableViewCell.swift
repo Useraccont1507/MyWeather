@@ -156,6 +156,7 @@ class CitiesListTableViewCell: UITableViewCell {
           
           let layer = BackgroundManager().getBackground(for: success.weather.first?.id, sunrise: success.sys.sunrise, sunset: success.sys.sunset , frame: self.roundedRectangleView.bounds)
           self.roundedRectangleView.layer.insertSublayer(layer!, at: 0)
+          self.indicatorView.stopAnimating()
         case .failure(let failure):
           print(failure)
           self.indicatorView.startAnimating()
