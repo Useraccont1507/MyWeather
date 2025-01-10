@@ -7,6 +7,17 @@
 MyWeather App is a modern and efficient tool for checking weather conditions anywhere in the world.  
 Featuring an intuitive design, a dynamic gradient background that reflects current weather, and real-time data powered by leading APIs, this app ensures you’re always informed and ready for any weather.  
 
+## ⛅️ Easy access to weahter conditions:
+- Weather now
+- temperature now
+- desprition of conditions
+- sunrise / sunset time
+- hourly forecast
+- visibility
+- wind
+- humidity
+- air pressure
+
 ## 🔑 Features  
 - 🌦 **Detailed Weather Information:** Temperature, humidity, wind speed, and other essential parameters.  
 - 🎨 **Dynamic Background:** A gradient that adapts to the weather type (sunny, rainy, snowy, etc.).  
@@ -19,7 +30,8 @@ This app leverages modern technologies and tools to deliver a high-quality exper
 - **Swift**  
 - **UIKit (Interface)**  
 - **UserDefaults (Storage)**  
-- **Grand Central Dispatch (GCD)**  
+- **Grand Central Dispatch (GCD)**
+- **Networking (URLSession)**  
 - **Language Localization**  
 
 ### APIs Used:  
