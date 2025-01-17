@@ -7,7 +7,11 @@
 
 import Foundation
 
-class TimeManager {
+protocol TimeManagerProtocol {
+  func decodeUnixToGMTTime(_ date: Int) -> Date
+}
+
+final class TimeManager: TimeManagerProtocol {
   func decodeUnixToGMTTime(_ date: Int) -> Date {
     let unixTimestamp: TimeInterval = TimeInterval(date)
     let date = Date(timeIntervalSince1970: unixTimestamp)

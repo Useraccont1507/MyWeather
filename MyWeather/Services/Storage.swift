@@ -7,7 +7,13 @@
 
 import Foundation
 
-class Storage {
+protocol StorageProtocol {
+  func isFirstEnter() -> Bool
+  func saveCityCoordinates(_ citiesCoordinates: [CityCoordinates])
+  func loadCityCoordinates() -> [CityCoordinates]
+}
+
+final class Storage: StorageProtocol {
   static let shared = Storage()
   
   private var storage = UserDefaults.standard

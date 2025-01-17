@@ -7,7 +7,7 @@
 
 import Network
 
-class NetworkMonitor {
+final class NetworkMonitor {
   static let shared = NetworkMonitor()
   
   private let monitor = NWPathMonitor()

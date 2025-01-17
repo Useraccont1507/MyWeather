@@ -7,8 +7,12 @@
 
 import Foundation
 
-class DegreeToDirectionConverter {
-  let directions = [
+protocol DegreeToDirectionConverterProtocol {
+  func degreesToDirection(degrees: Int) -> String
+}
+
+final class DegreeToDirectionConverter: DegreeToDirectionConverterProtocol {
+  private let directions = [
     "N", "NNE", "NE", "ENE",
     "E", "ESE", "SE", "SSE",
     "S", "SSW", "SW", "WSW",

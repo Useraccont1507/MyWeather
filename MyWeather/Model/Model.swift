@@ -196,8 +196,17 @@ struct CityCoordinates: Equatable {
   var lon: String
 }
 
-class CitiesCoordinatesModel {
+protocol CitiesCoordinatesModelProtocol {
+  func loadCitiesCoordinatesFromStorage(coordinates: [CityCoordinates])
+  func getAllCitiesCoordinates() -> [CityCoordinates]
+  func addCityCoordinatesToArray(_ cityElement: CityElement, completion: @escaping () -> Void)
+  func deleteCityCoordinates(_ index: Int)
+}
+
+final class CitiesCoordinatesModel: CitiesCoordinatesModelProtocol {
   private var coordinates: [CityCoordinates] = []
+  
+  private init() {}
   
   static let shared = CitiesCoordinatesModel()
   

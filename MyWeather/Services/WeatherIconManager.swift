@@ -8,7 +8,11 @@
 import Foundation
 import UIKit
 
-class WeatherIconManager {
+protocol WeatherIconManagerProtocol {
+  func getIcon(with weatherCode: String) -> UIImage?
+}
+
+final class WeatherIconManager: WeatherIconManagerProtocol {
   
   func getIcon(with weatherCode: String) -> UIImage? {
     switch weatherCode {

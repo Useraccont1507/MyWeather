@@ -8,7 +8,11 @@
 import Foundation
 import UIKit
 
-class BackgroundManager {
+protocol BackgroundManagerProtocol {
+  func getBackground(for weatherCode: Int?, sunrise: Int?, sunset: Int?, frame: CGRect) -> CAGradientLayer?
+}
+
+final class BackgroundManager: BackgroundManagerProtocol {
   
   func getBackground(for weatherCode: Int?, sunrise: Int?, sunset: Int?, frame: CGRect) -> CAGradientLayer? {
     let gradientLayer = CAGradientLayer()
