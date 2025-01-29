@@ -9,10 +9,12 @@ import UIKit
 
 class FirstViewController: UIViewController {
 
-  lazy private var mainGreetingLabel = UILabel()
-  lazy private var secondaryGreetingLabel = UILabel()
-  lazy private var cityImageView = UIImageView()
-  lazy private var beginButton = UIButton()
+  private let mainGreetingLabel = UILabel()
+  private let secondaryGreetingLabel = UILabel()
+  private let cityImageView = UIImageView()
+  private let beginButton = UIButton()
+  
+  private var presenter: FirstViewPresenterProtocol?
   
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -21,10 +23,10 @@ class FirstViewController: UIViewController {
     setupMainGreetingLabel(mainGreetingLabel)
     setupCityImageView(cityImageView)
     setupBeginButton(beginButton)
+    presenter?.prepareGreeting()
   }
   
   private func setupMainGreetingLabel(_ label: UILabel) {
-    label.text = "main_greeting".localized
     label.font = .systemFont(ofSize: 32, weight: .bold)
     label.textColor = .colorForTextTheme
     label.textAlignment = .center
@@ -40,7 +42,6 @@ class FirstViewController: UIViewController {
   }
   
   private func setupSecondaryGreetingLabel(_ label: UILabel) {
-    label.text = "secondary_greeting".localized
     label.font = .systemFont(ofSize: 20, weight: .semibold)
     label.textColor = .colorForTextTheme
     label.textAlignment = .center
@@ -58,7 +59,6 @@ class FirstViewController: UIViewController {
   
   private func setupCityImageView(_ imageView: UIImageView) {
     imageView.contentMode = .scaleToFill
-    imageView.image = UIImage(named: "CityImage")
     imageView.translatesAutoresizingMaskIntoConstraints = false
     view.addSubview(imageView)
     
@@ -71,7 +71,6 @@ class FirstViewController: UIViewController {
   }
   
   private func setupBeginButton(_ button: UIButton) {
-    button.setTitle("select_button_text".localized, for: .normal)
     button.setTitleColor(.white, for: .normal)
     button.backgroundColor = .systemBlue
     button.layer.cornerRadius = 24
@@ -87,15 +86,29 @@ class FirstViewController: UIViewController {
     ])
   }
   
+  func setPresenter(_ presenter: FirstViewPresenterProtocol) {
+    self.presenter = presenter
+  }
+  
   @objc private func moveToSeacrh() {
-    let vc = SearchCityViewController()
-    vc.delegateFirstViewController = self
-    self.present(vc, animated: true)
+    //let vc = SearchCityViewController()
+    //vc.delegateFirstViewController = self
+    //self.present(vc, animated: true)
+    presenter?.didTapButton(from: self)
   }
 }
 
-extension FirstViewController: PushFromFisrtViewControllerDelegate {
-  func pushFromSelf() {
-    navigationController?.pushViewController(CitiesListViewController(), animated: true)
+extension FirstViewController: FirstViewProtocol {
+  func showGreeting(mainText: String, secondaryText: String, image: UIImage, buttonText: String) {
+    mainGreetingLabel.text = mainText
+    secondaryGreetingLabel.text = secondaryText
+    cityImageView.image = image
+    beginButton.setTitle(buttonText, for: .normal)
   }
 }
+//
+//extension FirstViewController: PushFromFisrtViewControllerDelegate {
+//  func pushFromSelf() {
+//    navigationController?.pushViewController(CitiesListViewController(), animated: true)
+//  }
+//}

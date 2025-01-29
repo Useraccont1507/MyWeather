@@ -18,13 +18,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     let window = UIWindow(windowScene: scene)
-    var nav: UINavigationController
-    if Storage.shared.isFirstEnter() {
-      nav = UINavigationController(rootViewController: FirstViewController())
-    } else {
-      nav = UINavigationController(rootViewController: CitiesListViewController())
-    }
-
+    let nav = UINavigationController()
+    let router = Router(navigationController: nav, assemblyBuilder: AssemblyBuilder())
+    //TODO: - storage firstEnter
+    router.setInitialView(isFirstEnter: false)
+    
     window.rootViewController = nav
     window.makeKeyAndVisible()
     
