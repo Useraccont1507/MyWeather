@@ -12,14 +12,13 @@ protocol FirstViewProtocol: AnyObject {
 }
 
 protocol FirstViewPresenterProtocol {
-  init(view: FirstViewProtocol, router: RouterProtocol)
   func prepareGreeting()
   func didTapButton(from: UIViewController)
 }
 
 class FirstViewPresenter: FirstViewPresenterProtocol {
   private var router: RouterProtocol
-  weak var view: FirstViewProtocol?
+  private weak var view: FirstViewProtocol?
   
   required init(view: FirstViewProtocol, router: RouterProtocol) {
     self.view = view
@@ -36,6 +35,6 @@ class FirstViewPresenter: FirstViewPresenterProtocol {
   }
   
   func didTapButton(from vc: UIViewController) {
-    router.moveToSearchView(from: vc)
+    router.presentSearchView(from: vc)
   }
 }
