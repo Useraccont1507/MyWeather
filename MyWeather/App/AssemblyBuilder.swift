@@ -12,6 +12,11 @@ protocol AssemblyBuilderProtocol {
 }
 
 class AssemblyBuilder {
+  
+  private var webManager = WebManager()
+  private var storage = Storage()
+  private var citiesCoordiantesModel = CitiesCoordinatesModel()
+  
   func buildFirstGreetengModule(router: RouterProtocol) -> UIViewController {
     let view = FirstViewController()
     let presenter = FirstViewPresenter(view: view, router: router)
@@ -19,8 +24,14 @@ class AssemblyBuilder {
     return view
   }
   
-  func buildSearchView() -> UIViewController {
-    //TODO: - Search
-    return UIViewController()
+  func buildSearchView(router: RouterProtocol) -> UIViewController {
+    let view = SearchCityViewController()
+    let presenter = SearchCityViewPresenter(view: view,
+                                            router: router,
+                                            webManager: webManager,
+                                            storage: storage,
+                                            citiesCoordinatesModel: citiesCoordiantesModel)
+    view.setPresenter(presenter: presenter)
+    return view
   }
 }

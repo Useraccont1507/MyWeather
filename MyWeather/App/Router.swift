@@ -14,10 +14,13 @@ protocol MainRouter {
 
 protocol RouterProtocol: MainRouter {
   func setInitialView(isFirstEnter: Bool)
-  func moveToSearchView(from: UIViewController)
+  func presentSearchView(from: UIViewController)
+  func dismissSearchView(from: UIViewController)
+  func moveToCitiesListView()
 }
 
 class Router: RouterProtocol {
+  
   var navigationController: UINavigationController
   var assemblyBuilder: AssemblyBuilder
   
@@ -37,8 +40,17 @@ class Router: RouterProtocol {
     navigationController.viewControllers = [view]
   }
   
-  func moveToSearchView(from: UIViewController) {
-    let vc = SearchCityViewController()
-    from.present(vc, animated: true)
+  func presentSearchView(from: UIViewController) {
+    let view = assemblyBuilder.buildSearchView(router: self)
+    from.present(view, animated: true)
+  }
+  
+  func dismissSearchView(from: UIViewController) {
+    from.dismiss(animated: true)
+  }
+  
+  func moveToCitiesListView() {
+    //TODO: realization
+    navigationController.pushViewController(CitiesListViewController(), animated: true)
   }
 }
