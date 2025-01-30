@@ -7,13 +7,13 @@
 
 import Foundation
 
-protocol WebManagerProtocol {
+protocol WebManagerProtocol: AnyObject {
   func getUnits() -> Units
   func switchToFahrenheitUnits()
   func switchToCelsiusUnits()
   func fetchCityCoordinates(for text: String, completion: @escaping (Result<[CityElement], Error>) -> ())
-  func fetchTempNow(for coordinates: CityCoordinates, completion: @escaping (Result<WeatherNow, Error>) -> ())
-  func fetchTempHourly(for coordinates: CityCoordinates, completion: @escaping (Result<WeatherHourly, Error>) -> ())
+  func fetchTempNow(for coordinates: SharedCityCoordinates, completion: @escaping (Result<WeatherNow, Error>) -> ())
+  func fetchTempHourly(for coordinates: SharedCityCoordinates, completion: @escaping (Result<WeatherHourly, Error>) -> ())
 }
 
 enum Units: String {
@@ -22,8 +22,6 @@ enum Units: String {
 }
 
 final class WebManager: WebManagerProtocol {
-  
-  static let shared = WebManager()
   
   private var apiKey = "5d1d2171badb0afc3302079f35efb3e6"
   
@@ -63,7 +61,7 @@ final class WebManager: WebManagerProtocol {
     }
   }
   
-  func fetchTempNow(for coordinates: CityCoordinates, completion: @escaping (Result<WeatherNow, Error>) -> ()) {
+  func fetchTempNow(for coordinates: SharedCityCoordinates, completion: @escaping (Result<WeatherNow, Error>) -> ()) {
     let currentLocale = Locale.current
     var lang = "en"
     if currentLocale.languageCode == "uk" {
@@ -100,7 +98,7 @@ final class WebManager: WebManagerProtocol {
     }
   }
   
-  func fetchTempHourly(for coordinates: CityCoordinates, completion: @escaping (Result<WeatherHourly, Error>) -> ()) {
+  func fetchTempHourly(for coordinates: SharedCityCoordinates, completion: @escaping (Result<WeatherHourly, Error>) -> ()) {
     let currentLocale = Locale.current
     var lang = "en"
     if currentLocale.languageCode == "uk" {
