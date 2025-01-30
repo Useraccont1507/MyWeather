@@ -13,8 +13,7 @@
 "cancel_button" = "Скасувати";
 "searchbar_placeholder" = "Назва міста або поштовий індекс";
 "search_alert_title" = "Додавання";
-"search_alert_message1" = "Ви бажаєте додати ";
-"search_alert_message2" = " до вибраних місць?";
+"search_alert_message" = "Ви бажаєте додати до вибраних місць?";
 "cancel" = "cкасувати";
 "favorites" = "Вибрані";
 "failed_to_load_cities" = "Невдалось завнтажити дані. Перевірте з'єднання та спробуйте оновити";
