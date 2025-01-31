@@ -24,28 +24,6 @@ class MockFirstView: FirstViewProtocol {
   }
 }
 
-class MockRouter: RouterProtocol {
-  var navigationController: UINavigationController
-  var assemblyBuilder: MyWeather.AssemblyBuilder
-  
-  var didCallPresentSearchView = false
-  
-  func setInitialView(isFirstEnter: Bool) {}
-  
-  func presentSearchView(from: UIViewController) {
-    didCallPresentSearchView = true
-  }
-  
-  func dismissSearchView(from: UIViewController) {}
-  
-  func moveToCitiesListView() {}
-  
-  init(navigationController: UINavigationController, assemblyBuilder: AssemblyBuilder) {
-    self.navigationController = navigationController
-    self.assemblyBuilder = assemblyBuilder
-  }
-}
-
 final class FirstViewPresenterTests: XCTestCase {
   var presenter: FirstViewPresenter!
   var mockView: MockFirstView!

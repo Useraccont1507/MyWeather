@@ -1,0 +1,124 @@
+//
+//  MockRouter.swift
+//  MyWeatherTests
+//
+//  Created by Illia Verezei on 31.01.2025.
+//
+
+import UIKit
+@testable import MyWeather
+
+class MockRouter: RouterProtocol {
+  var navigationController: UINavigationController
+  var assemblyBuilder: MyWeather.AssemblyBuilder
+  
+  var didCallPresentSearchView = false
+  var isCallDismissSearchView = false
+  var isCallMoveToCitiesList = false
+  
+  func setInitialView(isFirstEnter: Bool) {}
+  
+  func presentSearchView(from: UIViewController) {
+    didCallPresentSearchView = true
+  }
+  
+  func dismissSearchView(from: UIViewController) {
+    isCallDismissSearchView = true
+  }
+  
+  func moveToCitiesListView() {
+    isCallMoveToCitiesList = true
+  }
+  
+  init(navigationController: UINavigationController, assemblyBuilder: AssemblyBuilder) {
+    self.navigationController = navigationController
+    self.assemblyBuilder = assemblyBuilder
+  }
+}
+
+class MockWebManager: WebManagerProtocol {
+  var isFetchingCityCoordinatesCalled = false
+  
+  let mockCityData = [CityElement(placeID: 0,
+                              licence: "baz",
+                              osmType: "bar",
+                              osmID: 0,
+                              lat: "baz",
+                              lon: "bar",
+                              cityElementClass: "for",
+                              type: "baz",
+                              placeRank: 0,
+                              importance: 0,
+                              addresstype: "bar",
+                              name: "bar",
+                              displayName: "baz",
+                              address: Address(city: "baz", iso31662Lvl4: "bar", country: "bar", countryCode: "for"), boundingbox: ["baz"])]
+  
+  func getUnits() -> MyWeather.Units {
+    .metric
+  }
+  
+  func switchToFahrenheitUnits() {
+    
+  }
+  
+  func switchToCelsiusUnits() {
+    
+  }
+  
+  func fetchCityCoordinates(for text: String, completion: @escaping (Result<[MyWeather.CityElement], any Error>) -> ()) {
+    isFetchingCityCoordinatesCalled = true
+    completion(.success(self.mockCityData))
+  }
+  
+  func fetchTempNow(for coordinates: MyWeather.SharedCityCoordinates, completion: @escaping (Result<MyWeather.WeatherNow, any Error>) -> ()) {
+    
+  }
+  
+  func fetchTempHourly(for coordinates: MyWeather.SharedCityCoordinates, completion: @escaping (Result<MyWeather.WeatherHourly, any Error>) -> ()) {
+    
+  }
+}
+
+class MockCitiesCoordinatesModel: CitiesCoordinatesModelProtocol {
+  var isAddingCalled = false
+  
+  private var cities: [MyWeather.SharedCityCoordinates] = []
+  
+  func loadCitiesCoordinatesFromStorage(coordinates: [MyWeather.SharedCityCoordinates]) {
+    
+  }
+  
+  func getAllCitiesCoordinates() -> [MyWeather.SharedCityCoordinates] {
+    cities
+  }
+  
+  func addCityCoordinatesToArray(_ cityElement: MyWeather.CityElement, completion: @escaping () -> Void) {
+    isAddingCalled = true
+    self.cities.append(SharedCityCoordinates(name: cityElement.name, lat: cityElement.lat, lon: cityElement.lon))
+  }
+  
+  func deleteCityCoordinates(_ index: Int) {
+    
+  }
+}
+
+class MockStorage: StorageProtocol {
+  var isSaveCalled = false
+  
+  private var cities: [MyWeather.SharedCityCoordinates] = []
+  
+  func isFirstEnter() -> Bool {
+    true
+  }
+  
+  func saveCityCoordinates(_ citiesCoordinates: [MyWeather.SharedCityCoordinates]) {
+    isSaveCalled = true
+    cities = citiesCoordinates
+  }
+  
+  func loadCityCoordinates() -> [MyWeather.SharedCityCoordinates] {
+    cities
+  }
+}
+
