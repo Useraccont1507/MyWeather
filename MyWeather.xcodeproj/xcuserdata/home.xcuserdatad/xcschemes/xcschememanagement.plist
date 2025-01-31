@@ -9,9 +9,19 @@
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
+		<key>MyWeatherTests.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>1</integer>
+		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>F41133452D4D32F600E6C781</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>F42D7D782CEB9A3A0044F53B</key>
 		<dict>
 			<key>primary</key>

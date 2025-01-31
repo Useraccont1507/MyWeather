@@ -6,7 +6,18 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXContainerItemProxy section */
+		F411334A2D4D32F600E6C781 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F42D7D712CEB9A390044F53B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F42D7D782CEB9A3A0044F53B;
+			remoteInfo = MyWeather;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		F41133462D4D32F600E6C781 /* MyWeatherTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MyWeatherTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F42D7D792CEB9A3A0044F53B /* MyWeather.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyWeather.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -21,6 +32,11 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		F41133472D4D32F600E6C781 /* MyWeatherTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = MyWeatherTests;
+			sourceTree = "<group>";
+		};
 		F42D7D7B2CEB9A3A0044F53B /* MyWeather */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -32,6 +48,13 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		F41133432D4D32F600E6C781 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F42D7D762CEB9A3A0044F53B /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -46,6 +69,7 @@
 			isa = PBXGroup;
 			children = (
 				F42D7D7B2CEB9A3A0044F53B /* MyWeather */,
+				F41133472D4D32F600E6C781 /* MyWeatherTests */,
 				F42D7D7A2CEB9A3A0044F53B /* Products */,
 			);
 			sourceTree = "<group>";
@@ -54,6 +78,7 @@
 			isa = PBXGroup;
 			children = (
 				F42D7D792CEB9A3A0044F53B /* MyWeather.app */,
+				F41133462D4D32F600E6C781 /* MyWeatherTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -61,6 +86,29 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		F41133452D4D32F600E6C781 /* MyWeatherTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F411334C2D4D32F600E6C781 /* Build configuration list for PBXNativeTarget "MyWeatherTests" */;
+			buildPhases = (
+				F41133422D4D32F600E6C781 /* Sources */,
+				F41133432D4D32F600E6C781 /* Frameworks */,
+				F41133442D4D32F600E6C781 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F411334B2D4D32F600E6C781 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				F41133472D4D32F600E6C781 /* MyWeatherTests */,
+			);
+			name = MyWeatherTests;
+			packageProductDependencies = (
+			);
+			productName = MyWeatherTests;
+			productReference = F41133462D4D32F600E6C781 /* MyWeatherTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		F42D7D782CEB9A3A0044F53B /* MyWeather */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = F42D7D8C2CEB9A3B0044F53B /* Build configuration list for PBXNativeTarget "MyWeather" */;
@@ -93,6 +141,10 @@
 				LastSwiftUpdateCheck = 1610;
 				LastUpgradeCheck = 1610;
 				TargetAttributes = {
+					F41133452D4D32F600E6C781 = {
+						CreatedOnToolsVersion = 16.1;
+						TestTargetID = F42D7D782CEB9A3A0044F53B;
+					};
 					F42D7D782CEB9A3A0044F53B = {
 						CreatedOnToolsVersion = 16.1;
 					};
@@ -114,11 +166,19 @@
 			projectRoot = "";
 			targets = (
 				F42D7D782CEB9A3A0044F53B /* MyWeather */,
+				F41133452D4D32F600E6C781 /* MyWeatherTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		F41133442D4D32F600E6C781 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F42D7D772CEB9A3A0044F53B /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -129,6 +189,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		F41133422D4D32F600E6C781 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F42D7D752CEB9A3A0044F53B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -138,7 +205,55 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		F411334B2D4D32F600E6C781 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F42D7D782CEB9A3A0044F53B /* MyWeather */;
+			targetProxy = F411334A2D4D32F600E6C781 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		F411334D2D4D32F600E6C781 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 6GA6W2287X;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = illia.com.MyWeatherTests;
+				"PRODUCT_BUNDLE_IDENTIFIER[sdk=iphoneos*]" = illia.com;
+				"PRODUCT_BUNDLE_IDENTIFIER[sdk=macosx*]" = illia.com;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MyWeather.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MyWeather";
+			};
+			name = Debug;
+		};
+		F411334E2D4D32F600E6C781 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 6GA6W2287X;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = illia.com.MyWeatherTests;
+				"PRODUCT_BUNDLE_IDENTIFIER[sdk=iphoneos*]" = illia.com;
+				"PRODUCT_BUNDLE_IDENTIFIER[sdk=macosx*]" = illia.com;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MyWeather.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MyWeather";
+			};
+			name = Release;
+		};
 		F42D7D8D2CEB9A3B0044F53B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -323,6 +438,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		F411334C2D4D32F600E6C781 /* Build configuration list for PBXNativeTarget "MyWeatherTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F411334D2D4D32F600E6C781 /* Debug */,
+				F411334E2D4D32F600E6C781 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		F42D7D742CEB9A3A0044F53B /* Build configuration list for PBXProject "MyWeather" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
