@@ -14,9 +14,10 @@ protocol SearchCityViewProtocol: AnyObject {
 }
 
 protocol SearchCityViewPresenterProtocol {
+  func preparePlaceholder()
   func searchTextDidChange(text: String)
   func getNumberOfItems() -> Int
-  func getResult(for i: Int) -> CityViewModel
+  func getResult(for i: Int) -> CityViewModel?
   func didTapOnCity(index: Int, from: UIViewController)
   func didTapCancelButton(from: UIViewController)
 }
@@ -36,7 +37,11 @@ class SearchCityViewPresenter: SearchCityViewPresenterProtocol {
     self.webManager = webManager
     self.storage = storage
     self.citiesCoordinatesModel = citiesCoordinatesModel
-    view.prepareSearchBarPlaceholder(text: "searchbar_placeholder".localized)
+    preparePlaceholder()
+  }
+  
+  func preparePlaceholder() {
+    view?.prepareSearchBarPlaceholder(text: "searchbar_placeholder".localized)
   }
   
   func searchTextDidChange(text: String) {
@@ -57,23 +62,29 @@ class SearchCityViewPresenter: SearchCityViewPresenterProtocol {
     cityData.count
   }
   
-  func getResult(for i: Int) -> CityViewModel {
-    CityViewModel(name: cityData[i].name, displayName: cityData[i].displayName)
+  func getResult(for i: Int) -> CityViewModel? {
+    switch cityData.isEmpty {
+    case true: nil
+    case false: CityViewModel(name: cityData[i].name, displayName: cityData[i].displayName)
+    }
   }
   
   func didTapOnCity(index: Int, from: UIViewController) {
-    guard let storage = storage,
-          let citiesCoordinatesModel = citiesCoordinatesModel else { return }
     view?.prepareAlert(title: "search_alert_title".localized,
                        message: "search_alert_message".localized,
-                       cancelTitle: "cancel".localized) { _ in
-      citiesCoordinatesModel.addCityCoordinatesToArray(self.cityData[index]) {
-        storage.saveCityCoordinates(citiesCoordinatesModel.getAllCitiesCoordinates())
-      }
-      self.router.moveToCitiesListView()
+                       cancelTitle: "cancel".localized) {_ in
+      self.addCity(index: index)
       self.router.dismissSearchView(from: from)
     }
-
+  }
+  
+  private func addCity(index: Int) {
+    guard let storage = storage,
+          let citiesCoordinatesModel = citiesCoordinatesModel else { return }
+    citiesCoordinatesModel.addCityCoordinatesToArray(self.cityData[index]) {
+      storage.saveCityCoordinates(citiesCoordinatesModel.getAllCitiesCoordinates())
+    }
+    self.router.moveToCitiesListView()
   }
   
   func didTapCancelButton(from: UIViewController) {
