@@ -171,6 +171,7 @@ protocol CitiesCoordinatesModelProtocol {
 
 final class CitiesCoordinatesModel: CitiesCoordinatesModelProtocol {
   private var coordinates: [SharedCityCoordinates] = []
+
   
   func loadCitiesCoordinatesFromStorage(coordinates: [SharedCityCoordinates]) {
     self.coordinates = coordinates

@@ -17,7 +17,8 @@ protocol RouterProtocol: MainRouter {
   func presentSearchView(from: UIViewController)
   func dismissSearchView(from: UIViewController)
   func moveToCitiesListView()
-  func moveToCityForecast(pageToShow: Int)
+  func moveToCityPageControl(pageToShow: Int)
+  func showCityPage(city: SharedCityCoordinates) -> UIViewController
 }
 
 class Router: RouterProtocol {
@@ -45,14 +46,18 @@ class Router: RouterProtocol {
   }
   
   func moveToCitiesListView() {
-    let view = assemblyBuilder.buildCitiesListModule(router: self)
+    navigationController.popToRootViewController(animated: true)
+    navigationController.setNavigationBarHidden(false, animated: false)
+  }
+  
+  func moveToCityPageControl(pageToShow: Int) {
+    let view = assemblyBuilder.buildCityPageControlModule(router: self, pageToShow: pageToShow)
+    navigationController.setNavigationBarHidden(true, animated: false)
     navigationController.pushViewController(view, animated: true)
   }
   
-  func moveToCityForecast(pageToShow: Int) {
-    //TODO: - cityForecast module
-    //let vc = PageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal)
-    //vc.transferCities(self.cities, pageIndex: indexPath.row)
-    //navigationController?.pushViewController(vc, animated: true)
+  func showCityPage(city: SharedCityCoordinates) -> UIViewController {
+    let view = assemblyBuilder.buildCityPage(city: city)
+    return view
   }
 }

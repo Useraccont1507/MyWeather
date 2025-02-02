@@ -11,10 +11,11 @@ protocol AssemblyBuilderProtocol {
   func buildFirstGreetengModule(router: RouterProtocol) -> UIViewController
   func buildSearchModule(router: RouterProtocol) -> UIViewController
   func buildCitiesListModule(router: RouterProtocol) -> UIViewController
+  func buildCityPageControlModule(router: RouterProtocol, pageToShow: Int) -> UIViewController
+  func buildCityPage(city: SharedCityCoordinates) -> UIViewController
 }
 
-class AssemblyBuilder {
-  
+class AssemblyBuilder: AssemblyBuilderProtocol {
   private var webManager = WebManager()
   private var storage = Storage()
   private var citiesCoordiantesModel = CitiesCoordinatesModel()
@@ -61,6 +62,33 @@ class AssemblyBuilder {
       storage: storage,
       citiesCoordinatesModel: citiesCoordiantesModel,
       backgroundManager: backgroundManager
+    )
+    view.setPresenter(presenter: presenter)
+    return view
+  }
+  
+  func buildCityPageControlModule(router: any RouterProtocol, pageToShow: Int) -> UIViewController {
+    let view = PageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal)
+    let presenter = CityForecastPresenter(
+      router: router,
+      view: view,
+      webManager: webManager,
+      citiesCoordinatesModel: citiesCoordiantesModel,
+      backgroundManager: backgroundManager,
+      pageindex: pageToShow
+    )
+    view.setPresenter(presenter: presenter)
+    return view
+  }
+  
+  func buildCityPage(city: SharedCityCoordinates) -> UIViewController {
+    let view = CityViewController()
+    let presenter = CityViewPresenter(
+      view: view,
+      city: city,
+      webManager: webManager,
+      backgroundManager: backgroundManager,
+      viewSize: view.view.bounds
     )
     view.setPresenter(presenter: presenter)
     return view
