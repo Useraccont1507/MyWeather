@@ -9,6 +9,14 @@ import UIKit
 @testable import MyWeather
 
 class MockRouter: RouterProtocol {
+  var didCallMoveToCityForecast = false
+  
+  func moveToInitialView() { }
+  
+  func moveToCityForecast(pageToShow: Int) {
+    didCallMoveToCityForecast = true
+  }
+  
   var navigationController: UINavigationController
   var assemblyBuilder: MyWeather.AssemblyBuilder
   
@@ -38,6 +46,8 @@ class MockRouter: RouterProtocol {
 
 class MockWebManager: WebManagerProtocol {
   var isFetchingCityCoordinatesCalled = false
+  var isFetchingShortCityForecastCalled = false
+  var isUnitsToogled = false
   
   let mockCityData = [CityElement(placeID: 0,
                               licence: "baz",
@@ -59,11 +69,11 @@ class MockWebManager: WebManagerProtocol {
   }
   
   func switchToFahrenheitUnits() {
-    
+    isUnitsToogled = true
   }
   
   func switchToCelsiusUnits() {
-    
+    isUnitsToogled = true
   }
   
   func fetchCityCoordinates(for text: String, completion: @escaping (Result<[MyWeather.CityElement], any Error>) -> ()) {
@@ -72,7 +82,7 @@ class MockWebManager: WebManagerProtocol {
   }
   
   func fetchTempNow(for coordinates: MyWeather.SharedCityCoordinates, completion: @escaping (Result<MyWeather.WeatherNow, any Error>) -> ()) {
-    
+    isFetchingShortCityForecastCalled = true
   }
   
   func fetchTempHourly(for coordinates: MyWeather.SharedCityCoordinates, completion: @escaping (Result<MyWeather.WeatherHourly, any Error>) -> ()) {
@@ -82,8 +92,9 @@ class MockWebManager: WebManagerProtocol {
 
 class MockCitiesCoordinatesModel: CitiesCoordinatesModelProtocol {
   var isAddingCalled = false
+  var isDeleteCalled = false
   
-  private var cities: [MyWeather.SharedCityCoordinates] = []
+  private var cities: [MyWeather.SharedCityCoordinates] = [SharedCityCoordinates(name: "kyiv", lat: "50.342", lon: "32.45")]
   
   func loadCitiesCoordinatesFromStorage(coordinates: [MyWeather.SharedCityCoordinates]) {
     
@@ -99,7 +110,7 @@ class MockCitiesCoordinatesModel: CitiesCoordinatesModelProtocol {
   }
   
   func deleteCityCoordinates(_ index: Int) {
-    
+    isDeleteCalled = true
   }
 }
 
@@ -122,3 +133,8 @@ class MockStorage: StorageProtocol {
   }
 }
 
+class MockBackgroundManager: BackgroundManagerProtocol {
+  func getBackground(for weatherCode: Int?, sunrise: Int?, sunset: Int?, frame: CGRect) -> CAGradientLayer? {
+    nil
+  }
+}

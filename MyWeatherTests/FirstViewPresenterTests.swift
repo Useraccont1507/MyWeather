@@ -8,21 +8,7 @@
 import XCTest
 @testable import MyWeather
 
-class MockFirstView: FirstViewProtocol {
-  var didCallShowGreeting = false
-  var receivedMainText: String?
-  var receivedSecondaryText: String?
-  var receivedImage: UIImage?
-  var receivedButtonText: String?
-  
-  func showGreeting(mainText: String, secondaryText: String, image: UIImage, buttonText: String) {
-    didCallShowGreeting = true
-    receivedMainText = mainText
-    receivedSecondaryText = secondaryText
-    receivedImage = image
-    receivedButtonText = buttonText
-  }
-}
+class MockFirstView: FirstViewProtocol { }
 
 final class FirstViewPresenterTests: XCTestCase {
   var presenter: FirstViewPresenter!
@@ -42,13 +28,6 @@ final class FirstViewPresenterTests: XCTestCase {
   }
   
   func testExample() throws {
-    presenter.prepareGreeting()
-    XCTAssertTrue(mockView.didCallShowGreeting, "Method showGreeting wasn't called")
-    XCTAssertEqual(mockView.receivedMainText, "main_greeting".localized)
-    XCTAssertEqual(mockView.receivedSecondaryText, "secondary_greeting".localized)
-    XCTAssertEqual(mockView.receivedButtonText, "select_button_text".localized)
-    XCTAssertNotNil(mockView.receivedImage)
-
     presenter.didTapButton(from: UIViewController())
     XCTAssertTrue(mockRouter.didCallPresentSearchView, "presenter didn't execute didTapButton")
   }

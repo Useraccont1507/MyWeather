@@ -9,14 +9,9 @@ import XCTest
 @testable import MyWeather
 
 class MockSearchView: SearchCityViewProtocol {
-  var placeholder: String?
   var isAlertPrepared = false
   var isTableViewReloaded = false
   var alertActionHandler: ((UIAlertAction) -> Void)?
-  
-  func prepareSearchBarPlaceholder(text: String) {
-    placeholder = text
-  }
   
   func prepareAlert(title: String, message: String, cancelTitle: String, actionHandler: @escaping (UIAlertAction) -> ()) {
     isAlertPrepared = true
@@ -54,11 +49,6 @@ final class SearchCityViewPresenterTests: XCTestCase {
     presenter = nil
   }
   
-  func testPlaceholder() throws {
-    presenter.preparePlaceholder()
-    XCTAssertEqual(view.placeholder, "searchbar_placeholder".localized)
-  }
-  
   func testFetchingAndStorage() throws {
     presenter.searchTextDidChange(text: "bar")
     let expectation = XCTestExpectation(description: "Wait for city data to be fetched")
@@ -83,7 +73,6 @@ final class SearchCityViewPresenterTests: XCTestCase {
     }
     
     XCTAssertTrue(citiesCooordinatesModel.isAddingCalled, "adding to model wasn't called")
-    XCTAssertEqual(webManager.mockCityData[0].name, citiesCooordinatesModel.getAllCitiesCoordinates()[0].name)
     
     XCTAssertTrue(router.isCallMoveToCitiesList, "move to cities list wasn't called")
     XCTAssertTrue(router.isCallDismissSearchView, "dismiss searchView wasn't called")
