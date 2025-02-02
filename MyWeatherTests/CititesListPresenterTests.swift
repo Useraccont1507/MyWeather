@@ -98,7 +98,7 @@ class CitiesListPresenterTests: XCTestCase {
     XCTAssertTrue(citiesCoordinatesModel.isDeleteCalled)
   }
   
-  func test() {
+  func testFetchingCalled() {
     presenter.fetchDataFor(index: 0, backgroundFrame: CGRect()) { _ in
       
     }
