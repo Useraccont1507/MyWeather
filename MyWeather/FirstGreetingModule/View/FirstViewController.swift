@@ -9,10 +9,12 @@ import UIKit
 
 class FirstViewController: UIViewController {
 
-  lazy private var mainGreetingLabel = UILabel()
-  lazy private var secondaryGreetingLabel = UILabel()
-  lazy private var cityImageView = UIImageView()
-  lazy private var beginButton = UIButton()
+  private let mainGreetingLabel = UILabel()
+  private let secondaryGreetingLabel = UILabel()
+  private let cityImageView = UIImageView()
+  private let beginButton = UIButton()
+  
+  private var presenter: FirstViewPresenterProtocol?
   
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -57,8 +59,8 @@ class FirstViewController: UIViewController {
   }
   
   private func setupCityImageView(_ imageView: UIImageView) {
-    imageView.contentMode = .scaleToFill
     imageView.image = UIImage(named: "CityImage")
+    imageView.contentMode = .scaleToFill
     imageView.translatesAutoresizingMaskIntoConstraints = false
     view.addSubview(imageView)
     
@@ -88,14 +90,12 @@ class FirstViewController: UIViewController {
   }
   
   @objc private func moveToSeacrh() {
-    let vc = SearchCityViewController()
-    vc.delegateFirstViewController = self
-    self.present(vc, animated: true)
+    presenter?.didTapButton(from: self)
   }
 }
 
-extension FirstViewController: PushFromFisrtViewControllerDelegate {
-  func pushFromSelf() {
-    navigationController?.pushViewController(CitiesListViewController(), animated: true)
+extension FirstViewController: FirstViewProtocol {
+  func setPresenter(_ presenter: FirstViewPresenterProtocol) {
+    self.presenter = presenter
   }
 }

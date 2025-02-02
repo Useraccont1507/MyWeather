@@ -9,13 +9,11 @@ import UIKit
 
 class CitiesListTableViewCell: UITableViewCell {
   
-  private var coordinates: CityCoordinates?
-  
-  lazy private var indicatorView = UIActivityIndicatorView(style: .medium)
-  lazy private var roundedRectangleView = UIView()
-  lazy private var cityLabel = UILabel()
-  lazy private var weatherDescpitionLabel = UILabel()
-  lazy private var tempLabel = UILabel()
+  let indicatorView = UIActivityIndicatorView(style: .medium)
+  let roundedRectangleView = UIView()
+  let cityLabel = UILabel()
+  let weatherDescpitionLabel = UILabel()
+  let tempLabel = UILabel()
   
   override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
     super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -124,44 +122,27 @@ class CitiesListTableViewCell: UITableViewCell {
     }
   }
   
-  func configure(coordinates: CityCoordinates, indexPath: IndexPath, tableView: UITableView) {
-    self.coordinates = coordinates
-    if coordinates.name.count >= 10 {
-      cityLabel.font = .systemFont(ofSize: 32, weight: .regular)
-    } else {
-      cityLabel.font = .systemFont(ofSize: 40, weight: .regular)
+  func configure(forecast: ShortCityForecast, indexPath: IndexPath, tableView: UITableView) {
+    guard let currentCell = tableView.cellForRow(at: indexPath) as? CitiesListTableViewCell,
+          currentCell === self else {
+      return
     }
     
-    cityLabel.text = coordinates.name
-    
-    removeBackgroundLayers(from: roundedRectangleView)
-    roundedRectangleView.setNeedsLayout()
-    
-    
-    
-    WebManager.shared.fetchTempNow(for: coordinates) { result in
-      DispatchQueue.main.async {
-        
-        guard let currentCell = tableView.cellForRow(at: indexPath) as? CitiesListTableViewCell,
-              currentCell === self else {
-          return
-        }
-        
-        switch result {
-        case .success(let success):
-          self.tempLabel.text = String(Int(success.main.temp.rounded())) + "°"
-          self.tempLabel.setNeedsLayout()
-          
-          self.weatherDescpitionLabel.text = success.weather.first?.description.capitalizeFirstWord()
-          
-          let layer = BackgroundManager().getBackground(for: success.weather.first?.id, sunrise: success.sys.sunrise, sunset: success.sys.sunset , frame: self.roundedRectangleView.bounds)
-          self.roundedRectangleView.layer.insertSublayer(layer!, at: 0)
-          self.indicatorView.stopAnimating()
-        case .failure(let failure):
-          print(failure)
-          self.indicatorView.startAnimating()
-        }
+    if forecast.isSuccess {
+      if forecast.cityName!.count >= 10 {
+        cityLabel.font = .systemFont(ofSize: 32, weight: .regular)
+      } else {
+        cityLabel.font = .systemFont(ofSize: 40, weight: .regular)
       }
+      cityLabel.text = forecast.cityName
+      tempLabel.text = forecast.tempLabelText
+      tempLabel.setNeedsLayout()
+      weatherDescpitionLabel.text = forecast.weatherDescriptionLabel
+      weatherDescpitionLabel.setNeedsLayout()
+      removeBackgroundLayers(from: roundedRectangleView)
+      roundedRectangleView.layer.insertSublayer(forecast.background!, at: 0)
+      roundedRectangleView.setNeedsLayout()
+      self.indicatorView.stopAnimating()
     }
   }
 }
