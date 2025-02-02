@@ -27,12 +27,13 @@ Featuring an intuitive design, a dynamic gradient background that reflects curre
 ## 🛠️ Technologies  
 
 This app leverages modern technologies and tools to deliver a high-quality experience:  
+App use MVP architecture. Unit tests are also included
 - **Swift**  
 - **UIKit (Interface)**  
 - **UserDefaults (Storage)**  
 - **Grand Central Dispatch (GCD)**
 - **Networking (URLSession)**  
-- **Language Localization**  
+- **Language Localization**
 
 ### APIs Used:  
 - **OpenWeather API:** Fetches real-time and forecast weather data, ensuring accuracy and reliability. Supports advanced parameters like UV index, air quality, and precipitation details.  
