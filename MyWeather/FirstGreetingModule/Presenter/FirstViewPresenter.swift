@@ -8,11 +8,10 @@
 import UIKit
 
 protocol FirstViewProtocol: AnyObject {
-  func showGreeting(mainText: String, secondaryText: String, image: UIImage, buttonText: String)
+ 
 }
 
 protocol FirstViewPresenterProtocol {
-  func prepareGreeting()
   func didTapButton(from: UIViewController)
 }
 
@@ -23,15 +22,6 @@ class FirstViewPresenter: FirstViewPresenterProtocol {
   required init(view: FirstViewProtocol, router: RouterProtocol) {
     self.view = view
     self.router = router
-  }
-  
-  func prepareGreeting() {
-    view?.showGreeting(
-      mainText: "main_greeting".localized,
-      secondaryText: "secondary_greeting".localized,
-      image: UIImage(named: "CityImage") ?? UIImage(systemName: "exclamationmark.icloud")!,
-      buttonText: "select_button_text".localized
-    )
   }
   
   func didTapButton(from vc: UIViewController) {

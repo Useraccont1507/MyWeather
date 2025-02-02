@@ -8,14 +8,12 @@
 import UIKit
 
 protocol SearchCityViewProtocol: AnyObject {
-  func prepareSearchBarPlaceholder(text: String)
   func prepareAlert(title: String, message: String, cancelTitle: String, actionHandler: @escaping (UIAlertAction)->())
   func reloadTableView()
 }
 
 protocol SearchCityViewPresenterProtocol {
-  func preparePlaceholder()
-  func searchTextDidChange(text: String)
+  func searchTextDidChange(text: String?)
   func getNumberOfItems() -> Int
   func getResult(for i: Int) -> CityViewModel?
   func didTapOnCity(index: Int, from: UIViewController)
@@ -27,24 +25,20 @@ class SearchCityViewPresenter: SearchCityViewPresenterProtocol {
   private let router: RouterProtocol
   private weak var view: SearchCityViewProtocol?
   private var webManager: WebManagerProtocol?
-  private var storage: StorageProtocol?
+  private var storage: StorageProtocol
   private var cityData: [CityElement] = []
-  private var citiesCoordinatesModel: CitiesCoordinatesModelProtocol?
+  private var citiesCoordinatesModel: CitiesCoordinatesModelProtocol
   
-  required init(view: SearchCityViewProtocol, router: RouterProtocol, webManager: WebManagerProtocol, storage: StorageProtocol, citiesCoordinatesModel: CitiesCoordinatesModelProtocol) {
+  init(view: SearchCityViewProtocol, router: RouterProtocol, webManager: WebManagerProtocol, storage: StorageProtocol, citiesCoordinatesModel: CitiesCoordinatesModelProtocol) {
     self.view = view
     self.router = router
     self.webManager = webManager
     self.storage = storage
     self.citiesCoordinatesModel = citiesCoordinatesModel
-    preparePlaceholder()
   }
   
-  func preparePlaceholder() {
-    view?.prepareSearchBarPlaceholder(text: "searchbar_placeholder".localized)
-  }
-  
-  func searchTextDidChange(text: String) {
+  func searchTextDidChange(text: String?) {
+    guard let text = text else { return }
     webManager?.fetchCityCoordinates(for: text) { result in
       DispatchQueue.main.async { [weak self] in
         switch result {
@@ -64,25 +58,26 @@ class SearchCityViewPresenter: SearchCityViewPresenterProtocol {
   
   func getResult(for i: Int) -> CityViewModel? {
     switch cityData.isEmpty {
-    case true: nil
-    case false: CityViewModel(name: cityData[i].name, displayName: cityData[i].displayName)
+    case true: return nil
+    case false: return CityViewModel(name: cityData[i].name, displayName: cityData[i].displayName)
     }
   }
   
   func didTapOnCity(index: Int, from: UIViewController) {
-    view?.prepareAlert(title: "search_alert_title".localized,
-                       message: "search_alert_message".localized,
-                       cancelTitle: "cancel".localized) {_ in
+    view?.prepareAlert(
+      title: "search_alert_title".localized,
+      message: "search_alert_message".localized,
+      cancelTitle: "cancel".localized
+    ) {_ in
       self.addCity(index: index)
       self.router.dismissSearchView(from: from)
     }
   }
   
   private func addCity(index: Int) {
-    guard let storage = storage,
-          let citiesCoordinatesModel = citiesCoordinatesModel else { return }
-    citiesCoordinatesModel.addCityCoordinatesToArray(self.cityData[index]) {
-      storage.saveCityCoordinates(citiesCoordinatesModel.getAllCitiesCoordinates())
+    citiesCoordinatesModel.addCityCoordinatesToArray(self.cityData[index]) { [weak self] in
+      guard let self = self else { return }
+      self.storage.saveCityCoordinates(self.citiesCoordinatesModel.getAllCitiesCoordinates())
     }
     self.router.moveToCitiesListView()
   }

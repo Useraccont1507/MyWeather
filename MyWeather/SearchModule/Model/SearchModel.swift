@@ -33,7 +33,7 @@ struct CityElement: Codable {
     }
 }
 
-// MARK: - Address
+
 struct Address: Codable {
     let city, iso31662Lvl4, country, countryCode: String
 

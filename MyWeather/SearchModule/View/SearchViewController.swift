@@ -51,6 +51,7 @@ class SearchCityViewController: UIViewController {
   }
   
   private func setupSearchBar(_ bar: UISearchBar) {
+    bar.placeholder = "searchbar_placeholder".localized
     bar.setBackgroundImage(UIImage(), for: .any, barMetrics: .default)
     bar.backgroundColor = .systemBackground
     bar.delegate = self
@@ -88,18 +89,16 @@ class SearchCityViewController: UIViewController {
 }
 
 extension SearchCityViewController: SearchCityViewProtocol {
-  func prepareSearchBarPlaceholder(text: String) {
-    searchBar.placeholder = text
-  }
-  
   func reloadTableView() {
     resultTableView.reloadData()
   }
   
-  func prepareAlert(title: String,
-                    message: String,
-                    cancelTitle: String,
-                    actionHandler: @escaping (UIAlertAction) -> ())
+  func prepareAlert(
+    title: String,
+    message: String,
+    cancelTitle: String,
+    actionHandler: @escaping (UIAlertAction) -> ()
+  )
   {
     alert.title = title
     alert.message = message
