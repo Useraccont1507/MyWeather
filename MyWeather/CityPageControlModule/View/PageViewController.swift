@@ -9,11 +9,9 @@ import UIKit
 
 class PageViewController: UIPageViewController {
   
-  private var pages: [CityViewController] = []
-  private var currentPageIndex: Int = 0
+  private var presenter: CityForecastPresenter?
   private let pageControl = UIPageControl()
-  
-  lazy private var moveToListButton = UIButton()
+  private let moveToListButton = UIButton()
   
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -21,7 +19,6 @@ class PageViewController: UIPageViewController {
     setupPageControl(pageControl)
     self.dataSource = self
     self.delegate = self
-    navigationController?.setNavigationBarHidden(true, animated: true)
   }
   
   func setupMoveToListButton(_ button: UIButton) {
@@ -42,13 +39,11 @@ class PageViewController: UIPageViewController {
   }
   
   func setupPageControl(_ control: UIPageControl) {
+    control.isUserInteractionEnabled = false
     control.backgroundColor = .gray.withAlphaComponent(0.3)
     control.layer.cornerRadius = 12
-    control.numberOfPages = pages.count
-    control.currentPage = currentPageIndex
     control.pageIndicatorTintColor = .lightGray
     control.currentPageIndicatorTintColor = .white
-    control.addTarget(self, action: #selector(pageControlValueChanged), for: .valueChanged)
     control.translatesAutoresizingMaskIntoConstraints = false
     view.addSubview(control)
     
@@ -59,59 +54,47 @@ class PageViewController: UIPageViewController {
   }
   
   @objc private func moveToList() {
-    navigationController?.popViewController(animated: true)
-    navigationController?.setNavigationBarHidden(false, animated: true)
-    navigationController?.navigationBar.prefersLargeTitles = true
-    self.navigationItem.largeTitleDisplayMode = .automatic
+    presenter?.moveToRootView()
   }
   
-  @objc private func pageControlValueChanged() {
-      let newPageIndex = pageControl.currentPage
-      let direction: UIPageViewController.NavigationDirection = newPageIndex > currentPageIndex ? .forward : .reverse
-      currentPageIndex = newPageIndex
-      setViewControllers([pages[newPageIndex]], direction: direction, animated: true, completion: nil)
-    }
-    
+  @objc private func change() {
+    presenter?.changePage(newPageIndex: pageControl.currentPage)
+  }
+}
+
+extension PageViewController: CityViewControlProtocol {
   
-  func transferCities(_ cities: [CityCoordinates], pageIndex: Int) {
-    cities.forEach { city in
-      let vc = CityViewController()
-      vc.configure(city)
-      pages.append(vc)
-    }
-    pageControl.numberOfPages = pages.count
-    setInitialPage(index: pageIndex)
+  func setPresenter(presenter: CityForecastPresenter) {
+    self.presenter = presenter
   }
   
-  private func setInitialPage(index: Int) {
-     guard index >= 0, index < pages.count else { return }
-     currentPageIndex = index
-     let initialPage = pages[index]
-     setViewControllers([initialPage], direction: .forward, animated: true, completion: nil)
-   }
+  func preparePageControl(initialPage: UIViewController?, numberOfPages: Int, currentPage: Int) {
+    guard let initialPage = initialPage else { return }
+    pageControl.numberOfPages = numberOfPages
+    pageControl.currentPage = currentPage
+    setViewControllers([initialPage], direction: .forward, animated: true)
+  }
+  
+  func changeCurrentPage(pages: [UIViewController], direction: UIPageViewController.NavigationDirection ) {
+    setViewControllers(pages, direction: direction, animated: true)
+  }
 }
 
 extension PageViewController: UIPageViewControllerDataSource {
   func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
-    guard let contentViewController = viewController as? CityViewController,
-          let currentIndex = pages.firstIndex(of: contentViewController),
-          currentIndex > 0 else { return nil }
-    return pages[currentIndex - 1]
+    presenter?.showViewConrollerBefore(viewControllerBefore: viewController)
   }
   
   func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
-    guard let contentViewController = viewController as? CityViewController,
-          let currentIndex = pages.firstIndex(of: contentViewController),
-          currentIndex < pages.count - 1 else { return nil }
-    return pages[currentIndex + 1]
+    presenter?.showViewConrollerAfter(viewControllerAfter: viewController)
   }
 }
 
 extension PageViewController: UIPageViewControllerDelegate {
   func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
-    if completed, let visibleViewController = viewControllers?.first as? CityViewController, let index = pages.firstIndex(of: visibleViewController) {
-      currentPageIndex = index
-      pageControl.currentPage = currentPageIndex
+    if completed, let visibleViewController = viewControllers?.first as? CityViewController, let index = presenter?.getPages().firstIndex(of: visibleViewController) {
+      presenter?.changePageIndex(index: index)
+      pageControl.currentPage = index
     }
   }
 }

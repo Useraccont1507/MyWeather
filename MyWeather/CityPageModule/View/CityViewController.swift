@@ -9,20 +9,19 @@ import UIKit
 
 class CityViewController: UIViewController {
   
-  private var city: CityCoordinates?
-  private var timezone: TimeZone?
+  private var presenter: CityViewPresenterProtocol?
   
   private var loadingView: LoadingView?
-  lazy private var scrollView = UIScrollView()
-  lazy private var contentView = UIView()
-  lazy private var cityLabel = UILabel()
-  lazy private var timeLabel = UILabel()
-  lazy private var weatherDescriptionView = WeatherDescriprionView()
-  lazy private var hourlyForecastView = HourlyForecastView()
-  lazy private var visibilityView = VisibilityView()
-  lazy private var windView = WindView()
-  lazy private var pressureView = PressureAndHumidityReusableView()
-  lazy private var humidityView = PressureAndHumidityReusableView()
+  private let scrollView = UIScrollView()
+  private let contentView = UIView()
+  private let cityLabel = UILabel()
+  private let timeLabel = UILabel()
+  private let weatherDescriptionView = WeatherDescriprionView()
+  private let hourlyForecastView = HourlyForecastView()
+  private let visibilityView = VisibilityView()
+  private let windView = WindView()
+  private let pressureView = PressureAndHumidityReusableView()
+  private let humidityView = PressureAndHumidityReusableView()
   
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -37,78 +36,18 @@ class CityViewController: UIViewController {
     setupWindView(windView)
     setupPressureView(pressureView)
     setupHumidityView(humidityView)
-    getData()
   }
   
   func setupBackground() {
-    let layer = BackgroundManager().getBackground(for: nil, sunrise: nil, sunset: nil, frame: self.view.bounds)
-    self.view.layer.insertSublayer(layer!, at: 0)
-  }
-  
-  private func getData() {
-    guard let city = city else { return }
-    
-    showLoadingView()
-    
-    WebManager.shared.fetchTempNow(for: city) { result in
-      DispatchQueue.main.async {
-        switch result {
-        case .success(let success):
-          self.view.layer.sublayers?.forEach { layer in
-            if layer is CAGradientLayer {
-              layer.removeFromSuperlayer()
-            }
-          }
-          
-          let layer = BackgroundManager().getBackground(for: success.weather.first?.id, sunrise: success.sys.sunrise, sunset: success.sys.sunset, frame: self.view.bounds)
-          self.view.layer.insertSublayer(layer!, at: 0)
-          let dateFormatter = DateFormatter()
-          dateFormatter.dateFormat = "MMM d, HH:mm"
-          let timezone = TimeZone(secondsFromGMT: success.timezone)
-          self.timezone = timezone
-          
-          dateFormatter.timeZone = timezone
-          let text = dateFormatter.string(from: Date.now)
-          self.timeLabel.text = text
-          
-          self.weatherDescriptionView.configure(icon: success.weather.first!.icon, description: success.weather.first!.description, temp: success.main.temp, timezone: success.timezone, sunrise: success.sys.sunrise, sunset: success.sys.sunset)
-          self.visibilityView.configure(visibility: success.visibility)
-          self.windView.configure(wind: success.wind)
-          self.pressureView.configure(value: success.main.pressure, image: UIImage(systemName: "aqi.medium"), title: "pressure".localized)
-          self.humidityView.configure(value: success.main.humidity, image: UIImage(systemName: "humidity.fill"), title: "humidity".localized)
-          self.dismissLoadingView()
-        case .failure(let failure):
-          print(failure)
-        }
-      }
+      let layer = BackgroundManager().getBackground(for: nil, sunrise: nil, sunset: nil, frame: self.view.bounds)
+      self.view.layer.insertSublayer(layer!, at: 0)
     }
-  }
-  
-  private func getDataHourly(completion: @escaping ()->()) {
-    guard let city = city else { return }
-    WebManager.shared.fetchTempHourly(for: city) { result in
-      switch result {
-      case .success(let success):
-        DispatchQueue.main.async {
-          self.hourlyForecastView.configure(list: success.list, timezone: self.timezone)
-          completion()
-        }
-      case .failure(let failure):
-        print(failure)
-      }
-    }
-  }
   
   private func setupScrollView(_ view: UIScrollView) {
     view.bouncesZoom = false
     view.alwaysBounceVertical = true
     view.showsVerticalScrollIndicator = false
     view.isUserInteractionEnabled = NetworkMonitor.shared.isConnected
-    
-    NetworkMonitor.shared.onStatusChange = { [weak self] isConnected in
-      self?.handleNetworkChange(isConnected: isConnected)
-    }
-    
     view.translatesAutoresizingMaskIntoConstraints = false
     self.view.addSubview(view)
     
@@ -134,7 +73,6 @@ class CityViewController: UIViewController {
   }
   
   private func setupCityLabel(_ label: UILabel) {
-    label.text = city?.name ?? "-"
     label.font = .systemFont(ofSize: 28, weight: .semibold)
     label.textColor = .white
     label.textAlignment = .center
@@ -183,10 +121,6 @@ class CityViewController: UIViewController {
         view.topAnchor.constraint(equalTo: self.weatherDescriptionView.bottomAnchor, constant: 16),
         view.heightAnchor.constraint(equalToConstant: 154)
       ])
-    
-    getDataHourly {
-      self.hourlyForecastView.reloadCollection()
-    }
   }
   
   private func setupVisibilityView(_ view: VisibilityView) {
@@ -237,16 +171,80 @@ class CityViewController: UIViewController {
       view.bottomAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.bottomAnchor)
     ])
   }
-  
-  func configure(_ city: CityCoordinates) {
-    self.city = city
+}
+
+extension CityViewController: CityViewProtocol {
+  func reloadCollectionView() {
+    hourlyForecastView.reloadCollection()
   }
   
-  private func handleNetworkChange(isConnected: Bool) {
+  func startLoadingView() {
+    showLoadingView()
+  }
+  
+  func stopLoadingView() {
+    dismissLoadingView()
+  }
+  
+  
+  func setPresenter(presenter: any CityViewPresenterProtocol) {
+    self.presenter = presenter
+  }
+  
+  func handleNetworkChange(isConnected: Bool) {
     if isConnected {
-      getData()
-      self.view.layoutIfNeeded()
+      presenter?.fetchForecastNow(viewFrame: view.bounds)
+      presenter?.fetchForecastHourly { [unowned self] in
+        self.setupHourlyForecastView(self.hourlyForecastView)
+      }
+      view.layoutIfNeeded()
     }
+  }
+  
+  func prepareDataForCollectionView(hourlyWeahterList: [List], timezone: TimeZone?) {
+    hourlyForecastView.configure(list: hourlyWeahterList, timezone: timezone)
+  }
+  
+  func prepareDataForView(
+    background: CAGradientLayer?,
+    cityName: String,
+    dateString: String,
+    weatherIcon: String,
+    description: String,
+    temp: Double,
+    sunrise: Int?,
+    sunset: Int?,
+    timezone: Int
+  ) {
+    self.view.layer.sublayers?.forEach { layer in
+      if layer is CAGradientLayer {
+        layer.removeFromSuperlayer()
+      }
+    }
+    self.view.layer.insertSublayer(background!, at: 0)
+    cityLabel.text = cityName
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "MMM d, HH:mm"
+    let timezoneSecondary = TimeZone(secondsFromGMT: timezone)
+    dateFormatter.timeZone = timezoneSecondary
+    let text = dateFormatter.string(from: Date.now)
+    self.timeLabel.text = text
+    
+    weatherDescriptionView.configure(
+      icon: weatherIcon,
+      description: description,
+      temp: temp,
+      timezone: timezone,
+      sunrise: sunrise,
+      sunset: sunset
+    )
+  }
+  
+  func prepareDataForOtherViews(visibility: Int, wind: Wind, pressure: Int, humidity: Int) {
+    self.visibilityView.configure(visibility: visibility)
+    self.windView.configure(wind: wind)
+    self.pressureView.configure(value: pressure, image: UIImage(systemName: "aqi.medium"), title: "pressure".localized)
+    self.humidityView.configure(value: humidity, image: UIImage(systemName: "humidity.fill"), title: "humidity".localized)
   }
 }
 
