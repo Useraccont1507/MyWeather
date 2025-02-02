@@ -20,8 +20,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     let window = UIWindow(windowScene: scene)
     let nav = UINavigationController()
     let router = Router(navigationController: nav, assemblyBuilder: AssemblyBuilder())
-    //TODO: - storage firstEnter
-    router.setInitialView(isFirstEnter: false)
+    router.moveToInitialView()
     
     window.rootViewController = nav
     window.makeKeyAndVisible()
