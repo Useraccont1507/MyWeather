@@ -70,6 +70,9 @@ class CityPagePresenterTest: XCTestCase {
     router = nil
     view = nil
     presenter = nil
+    citiesCoordinatesModel = nil
+    webManager = nil
+    backgroundManager = nil
   }
   
   func testGetForecastNow() {

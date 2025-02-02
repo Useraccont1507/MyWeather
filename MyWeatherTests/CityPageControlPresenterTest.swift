@@ -45,7 +45,10 @@ class CityPageControlPresenterTest: XCTestCase {
   override func tearDownWithError() throws {
     router = nil
     view = nil
+    citiesCoordinatesModel = nil
     presenter = nil
+    webManager = nil
+    backgroundManager = nil
   }
   
   func testGetPageIndex() {
