@@ -24,10 +24,6 @@ class SearchCityViewController: UIViewController {
     setupTableView(resultTableView)
   }
   
-  func setPresenter(presenter: SearchCityViewPresenterProtocol) {
-    self.presenter = presenter
-  }
-  
   private func setupToolBar(_ bar: UIToolbar) {
     bar.barTintColor = .systemBackground
     bar.translatesAutoresizingMaskIntoConstraints = false
@@ -89,6 +85,10 @@ class SearchCityViewController: UIViewController {
 }
 
 extension SearchCityViewController: SearchCityViewProtocol {
+  func setPresenter(presenter: SearchCityViewPresenterProtocol) {
+    self.presenter = presenter
+  }
+  
   func reloadTableView() {
     resultTableView.reloadData()
   }

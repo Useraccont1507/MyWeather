@@ -8,7 +8,7 @@
 import UIKit
 
 protocol FirstViewProtocol: AnyObject {
- 
+  func setPresenter(_ presenter: FirstViewPresenterProtocol)
 }
 
 protocol FirstViewPresenterProtocol {

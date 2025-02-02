@@ -16,13 +16,10 @@ class CitiesListViewController: UIViewController {
   
   override func viewDidLoad() {
     super.viewDidLoad()
+    presenter?.subscribeOnNotification()
     setupViewController()
     setupTableView(tableView)
     setupToolBar(toolBar)
-  }
-  
-  func setPresenter(presenter: CitiesListPresenter) {
-    self.presenter = presenter
   }
   
   private func setupViewController() {
@@ -90,6 +87,10 @@ class CitiesListViewController: UIViewController {
 }
 
 extension CitiesListViewController: CitiesListViewProtocol {
+  func setPresenter(presenter: CitiesListPresenter) {
+    self.presenter = presenter
+  }
+  
   func handleNetworkChange(isConnected: Bool) {
     if isConnected {
       self.tableView.reloadData()

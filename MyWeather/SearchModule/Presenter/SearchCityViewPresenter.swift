@@ -8,6 +8,7 @@
 import UIKit
 
 protocol SearchCityViewProtocol: AnyObject {
+  func setPresenter(presenter: SearchCityViewPresenterProtocol)
   func prepareAlert(title: String, message: String, cancelTitle: String, actionHandler: @escaping (UIAlertAction)->())
   func reloadTableView()
 }
@@ -70,6 +71,7 @@ class SearchCityViewPresenter: SearchCityViewPresenterProtocol {
       cancelTitle: "cancel".localized
     ) {_ in
       self.addCity(index: index)
+      NotificationCenter.default.post(name: NSNotification.Name("SearchViewDismissed"), object: nil)
       self.router.dismissSearchView(from: from)
     }
   }

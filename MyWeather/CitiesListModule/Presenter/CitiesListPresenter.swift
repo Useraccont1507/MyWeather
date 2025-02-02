@@ -8,6 +8,7 @@
 import UIKit
 
 protocol CitiesListViewProtocol: AnyObject {
+  func setPresenter(presenter: CitiesListPresenter)
   func reloadingTableView()
   func reloadingTableViewWithAnimation()
   func showingEditingMode()
@@ -16,6 +17,7 @@ protocol CitiesListViewProtocol: AnyObject {
 }
 
 protocol CitiesListPresenterProtocol {
+  func subscribeOnNotification()
   func startNetworkMonitor()
   func toogleUnits()
   func moveToSearchView(from: UIViewController)
@@ -28,7 +30,6 @@ protocol CitiesListPresenterProtocol {
 }
 
 class CitiesListPresenter: CitiesListPresenterProtocol {
-  
   private let router: RouterProtocol
   private weak var view: CitiesListViewProtocol?
   private var webManager: WebManagerProtocol
@@ -44,6 +45,14 @@ class CitiesListPresenter: CitiesListPresenterProtocol {
     self.citiesCoordinatesModel = citiesCoordinatesModel
     self.backgroundManager = backgroundManager
     startNetworkMonitor()
+  }
+  
+  func subscribeOnNotification() {
+    NotificationCenter.default.addObserver(self, selector: #selector(reloadTableview), name: NSNotification.Name("SearchViewDismissed"), object: nil)
+  }
+  
+  @objc private func reloadTableview() {
+    view?.reloadingTableView()
   }
   
   func startNetworkMonitor() {
@@ -106,7 +115,7 @@ class CitiesListPresenter: CitiesListPresenterProtocol {
   }
   
   func goToCityPageView(pageToShow: Int) {
-    router.moveToCityForecast(pageToShow: pageToShow)
+    router.moveToCityPageControl(pageToShow: pageToShow)
   }
   
   func deleteCity(index: Int) {

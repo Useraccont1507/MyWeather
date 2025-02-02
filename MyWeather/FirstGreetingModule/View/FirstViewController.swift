@@ -25,10 +25,6 @@ class FirstViewController: UIViewController {
     setupBeginButton(beginButton)
   }
   
-  func setPresenter(_ presenter: FirstViewPresenterProtocol) {
-    self.presenter = presenter
-  }
-  
   private func setupMainGreetingLabel(_ label: UILabel) {
     label.text = "main_greeting".localized
     label.font = .systemFont(ofSize: 32, weight: .bold)
@@ -98,4 +94,8 @@ class FirstViewController: UIViewController {
   }
 }
 
-extension FirstViewController: FirstViewProtocol { }
+extension FirstViewController: FirstViewProtocol {
+  func setPresenter(_ presenter: FirstViewPresenterProtocol) {
+    self.presenter = presenter
+  }
+}
