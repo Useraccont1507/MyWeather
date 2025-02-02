@@ -8,7 +8,9 @@
 import XCTest
 @testable import MyWeather
 
-class MockFirstView: FirstViewProtocol { }
+class MockFirstView: FirstViewProtocol {
+  func setPresenter(_ presenter: any MyWeather.FirstViewPresenterProtocol) { }
+}
 
 final class FirstViewPresenterTests: XCTestCase {
   var presenter: FirstViewPresenter!

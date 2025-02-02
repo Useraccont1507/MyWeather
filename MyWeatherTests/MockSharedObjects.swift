@@ -10,11 +10,22 @@ import UIKit
 
 class MockRouter: RouterProtocol {
   var didCallMoveToCityForecast = false
+  var didCallMoveCityPageControl = false
+  var didShowCityPage = false
   
   func moveToInitialView() { }
   
   func moveToCityForecast(pageToShow: Int) {
     didCallMoveToCityForecast = true
+  }
+  
+  func moveToCityPageControl(pageToShow: Int) {
+    didCallMoveCityPageControl = true
+  }
+  
+  func showCityPage(city: MyWeather.SharedCityCoordinates) -> UIViewController {
+    didShowCityPage = true
+    return UIViewController()
   }
   
   var navigationController: UINavigationController
@@ -47,6 +58,7 @@ class MockRouter: RouterProtocol {
 class MockWebManager: WebManagerProtocol {
   var isFetchingCityCoordinatesCalled = false
   var isFetchingShortCityForecastCalled = false
+  var isFetchingHourlyForecastCalled = false
   var isUnitsToogled = false
   
   let mockCityData = [CityElement(placeID: 0,
@@ -86,7 +98,7 @@ class MockWebManager: WebManagerProtocol {
   }
   
   func fetchTempHourly(for coordinates: MyWeather.SharedCityCoordinates, completion: @escaping (Result<MyWeather.WeatherHourly, any Error>) -> ()) {
-    
+    isFetchingHourlyForecastCalled = true
   }
 }
 

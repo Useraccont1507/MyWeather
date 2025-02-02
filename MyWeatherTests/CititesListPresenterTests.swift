@@ -11,6 +11,8 @@ import XCTest
 class MockCitiesListView: CitiesListViewProtocol {
   var editingModeOn = false
   
+  func setPresenter(presenter: MyWeather.CitiesListPresenter) { }
+  
   func reloadingTableView() {
      
   }
@@ -88,9 +90,9 @@ class CitiesListPresenterTests: XCTestCase {
     XCTAssertTrue(router.didCallPresentSearchView)
   }
   
-  func testMoveToCityForecast() {
-    presenter.goToCityPageView(pageToShow: 1)
-    XCTAssertTrue(router.didCallMoveToCityForecast)
+  func testMoveToCityPageControl() {
+    presenter.goToCityControl(pageToShow: 1)
+    XCTAssertTrue(router.didCallMoveCityPageControl)
   }
   
   func testDeleteCity() {

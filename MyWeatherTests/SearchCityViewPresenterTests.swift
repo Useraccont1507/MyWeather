@@ -13,6 +13,9 @@ class MockSearchView: SearchCityViewProtocol {
   var isTableViewReloaded = false
   var alertActionHandler: ((UIAlertAction) -> Void)?
   
+  func setPresenter(presenter: any MyWeather.SearchCityViewPresenterProtocol) { }
+  
+  
   func prepareAlert(title: String, message: String, cancelTitle: String, actionHandler: @escaping (UIAlertAction) -> ()) {
     isAlertPrepared = true
     alertActionHandler = actionHandler
