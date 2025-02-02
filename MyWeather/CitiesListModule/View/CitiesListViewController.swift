@@ -9,16 +9,15 @@ import UIKit
 
 class CitiesListViewController: UIViewController {
   
-  private var cities: [CityCoordinates] = []
+  var presenter: CitiesListPresenterProtocol?
   
-  lazy private var tableView = UITableView()
-  lazy private var toolBar = UIToolbar()
+  let tableView = UITableView()
+  let toolBar = UIToolbar()
   
   override func viewDidLoad() {
     super.viewDidLoad()
+    presenter?.subscribeOnNotification()
     setupViewController()
-    CitiesCoordinatesModel.shared.loadCitiesCoordinatesFromStorage(coordinates: Storage.shared.loadCityCoordinates())
-    cities = CitiesCoordinatesModel.shared.getAllCitiesCoordinates()
     setupTableView(tableView)
     setupToolBar(toolBar)
   }
@@ -60,11 +59,6 @@ class CitiesListViewController: UIViewController {
     tableView.dataSource = self
     tableView.register(CitiesListTableViewCell.self, forCellReuseIdentifier: "cell")
     tableView.separatorStyle = .none
-    
-    NetworkMonitor.shared.onStatusChange = { [weak self] isConnected in
-      self?.handleNetworkChange(isConnected: isConnected)
-    }
-    
     tableView.allowsSelectionDuringEditing = false
     tableView.showsVerticalScrollIndicator = false
     tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -80,6 +74,33 @@ class CitiesListViewController: UIViewController {
   }
   
   @objc private func showEditing() {
+    presenter?.showEditing()
+  }
+  
+  @objc private func toogleUnits(sender: UIBarItem) {
+    presenter?.toogleUnits()
+  }
+  
+  @objc private func moveToSearchVC() {
+    presenter?.moveToSearchView(from: self)
+  }
+}
+
+extension CitiesListViewController: CitiesListViewProtocol {
+  func setPresenter(presenter: CitiesListPresenter) {
+    self.presenter = presenter
+  }
+  
+  func handleNetworkChange(isConnected: Bool) {
+    if isConnected {
+      self.tableView.reloadData()
+      self.toolBar.items?.first?.isEnabled = true
+    } else {
+      self.toolBar.items?.first?.isEnabled = false
+    }
+  }
+  
+  func showingEditingMode() {
     UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseOut) {
       if self.tableView.isEditing == true {
         self.tableView.isEditing = false
@@ -93,25 +114,11 @@ class CitiesListViewController: UIViewController {
     }
   }
   
-  @objc private func toogleUnits(sender: UIBarItem) {
-    switch WebManager.shared.getUnits() {
-    case .imperial:
-      WebManager.shared.switchToCelsiusUnits()
-      self.reloadTableViewWithAnimation()
-    case .metric:
-      WebManager.shared.switchToFahrenheitUnits()
-      self.reloadTableViewWithAnimation()
-    }
+  func reloadingTableView() {
+    self.tableView.reloadData()
   }
   
-  @objc private func moveToSearchVC() {
-    let vc = SearchCityViewController()
-    vc.delegateFirstViewController = nil
-    vc.delegateReloadCities = self
-    self.present(vc, animated: true)
-  }
-  
-  private func reloadTableViewWithAnimation() {
+  func reloadingTableViewWithAnimation() {
     UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseIn) {
       self.navigationItem.rightBarButtonItem?.isEnabled = false
       self.toolBar.items?.first?.isEnabled = false
@@ -131,29 +138,28 @@ class CitiesListViewController: UIViewController {
     }
   }
   
-  private func handleNetworkChange(isConnected: Bool) {
-    if isConnected {
-      self.tableView.reloadData()
-      self.toolBar.items?.first?.isEnabled = true
-    } else {
-      self.toolBar.items?.first?.isEnabled = false
-    }
+  func deleteRowAt(index: Int) {
+    tableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
   }
 }
 
 extension CitiesListViewController: UITableViewDataSource {
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return cities.count
+    presenter?.showNumberOfCitites() ?? 0
   }
   
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell") as? CitiesListTableViewCell else { fatalError("Expected CitiesListTableViewCell") }
-    
     cell.selectionStyle = .none
     cell.layoutIfNeeded()
     
-    let coordinates = cities[indexPath.row]
-    cell.configure(coordinates: coordinates, indexPath: indexPath, tableView: tableView)
+    presenter?.fetchDataFor(index: indexPath.row, backgroundFrame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 110)) { forecast in
+      DispatchQueue.main.async {
+        if let updatedCell = tableView.cellForRow(at: indexPath) as? CitiesListTableViewCell {
+          updatedCell.configure(forecast: forecast, indexPath: indexPath, tableView: tableView)
+        }
+      }
+    }
     return cell
   }
 }
@@ -164,22 +170,10 @@ extension CitiesListViewController: UITableViewDelegate {
   }
   
   func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-    let vc = PageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal)
-    vc.transferCities(self.cities, pageIndex: indexPath.row)
-    navigationController?.pushViewController(vc, animated: true)
+    presenter?.goToCityControl(pageToShow: indexPath.row)
   }
   
   func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-    cities.remove(at: indexPath.row)
-    CitiesCoordinatesModel.shared.deleteCityCoordinates(indexPath.row)
-    Storage.shared.saveCityCoordinates(CitiesCoordinatesModel.shared.getAllCitiesCoordinates())
-    tableView.deleteRows(at: [indexPath], with: .left)
-  }
-}
-
-extension CitiesListViewController: ReloadCitiesTableViewControllerDelegate {
-  func reload() {
-    self.cities = CitiesCoordinatesModel.shared.getAllCitiesCoordinates()
-    self.tableView.reloadData()
+    presenter?.deleteCity(index: indexPath.row)
   }
 }

@@ -9,18 +9,12 @@ import UIKit
 
 class SearchCityViewController: UIViewController {
   
-  weak var delegateFirstViewController: PushFromFisrtViewControllerDelegate?
-  weak var delegateReloadCities: ReloadCitiesTableViewControllerDelegate?
-  
-  private var resultForTableView: [CityElement] = [] {
-    didSet {
-      self.resultTableView.reloadData()
-    }
-  }
+  private var presenter: SearchCityViewPresenterProtocol?
   
   lazy private var toolBar = UIToolbar()
   lazy private var searchBar = UISearchBar()
   lazy private var resultTableView = UITableView()
+  lazy private var alert = UIAlertController(title: nil, message: nil, preferredStyle: .alert)
   
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -53,9 +47,9 @@ class SearchCityViewController: UIViewController {
   }
   
   private func setupSearchBar(_ bar: UISearchBar) {
+    bar.placeholder = "searchbar_placeholder".localized
     bar.setBackgroundImage(UIImage(), for: .any, barMetrics: .default)
     bar.backgroundColor = .systemBackground
-    bar.placeholder = "searchbar_placeholder".localized
     bar.delegate = self
     bar.keyboardType = .default
     bar.searchBarStyle = .prominent
@@ -86,22 +80,38 @@ class SearchCityViewController: UIViewController {
   }
   
   @objc private func dissmissViewController() {
-    self.dismiss(animated: true)
+    presenter?.didTapCancelButton(from: self)
+  }
+}
+
+extension SearchCityViewController: SearchCityViewProtocol {
+  func setPresenter(presenter: SearchCityViewPresenterProtocol) {
+    self.presenter = presenter
+  }
+  
+  func reloadTableView() {
+    resultTableView.reloadData()
+  }
+  
+  func prepareAlert(
+    title: String,
+    message: String,
+    cancelTitle: String,
+    actionHandler: @escaping (UIAlertAction) -> ()
+  )
+  {
+    alert.title = title
+    alert.message = message
+    let cancelAction = UIAlertAction(title: cancelTitle , style: .cancel)
+    let action = UIAlertAction(title: "OK", style: .default, handler: actionHandler)
+    alert.addAction(action)
+    alert.addAction(cancelAction)
   }
 }
 
 extension SearchCityViewController: UISearchBarDelegate {
   func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-    WebManager().fetchCityCoordinates(for: searchText) { result in
-      switch result {
-      case .success(let success):
-        DispatchQueue.main.async {
-          self.resultForTableView = success
-        }
-      case .failure(let failure):
-        print(failure.localizedDescription)
-      }
-    }
+    presenter?.searchTextDidChange(text: searchText)
   }
 }
 
@@ -109,31 +119,21 @@ extension SearchCityViewController: UITableViewDataSource {
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell") as? ResultTableViewCell else { fatalError("Expected ResultTableViewCel")
     }
-    resultForTableView.forEach { item in
-      cell.configureLabels(mainText: item.name, secondaryText: item.displayName)
+    let result = presenter?.getResult(for: indexPath.row)
+    if let result = result {
+      cell.configureLabels(mainText: result.name, secondaryText: result.displayName)
     }
     return cell
   }
   
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return resultForTableView.count
+    presenter?.getNumberOfItems() ?? 0
   }
 }
 
 extension SearchCityViewController: UITableViewDelegate {
   func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-    let alertController = UIAlertController(title: "search_alert_title".localized, message: "search_alert_message1".localized + resultForTableView[indexPath.row].name + "search_alert_message2".localized, preferredStyle: .alert)
-    let cancelAction = UIAlertAction(title: "cancel".localized, style: .cancel)
-    let action = UIAlertAction(title: "OK", style: .default) { _ in
-      CitiesCoordinatesModel.shared.addCityCoordinatesToArray(self.resultForTableView[indexPath.row]) {
-              Storage.shared.saveCityCoordinates(CitiesCoordinatesModel.shared.getAllCitiesCoordinates())
-              self.delegateFirstViewController?.pushFromSelf()
-              self.delegateReloadCities?.reload()
-              self.dissmissViewController()
-          }
-    }
-    alertController.addAction(action)
-    alertController.addAction(cancelAction)
-    self.present(alertController, animated: true)
+    presenter?.didTapOnCity(index: indexPath.row, from: self)
+    self.present(alert, animated: true)
   }
 }

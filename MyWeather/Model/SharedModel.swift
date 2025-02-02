@@ -7,33 +7,6 @@
 
 import Foundation
 
-//MARK: - City geocoding
-struct CityElement: Codable {
-  let placeID: Int
-  let licence, osmType: String
-  let osmID: Int
-  let lat, lon: String
-  let cityClass, type: String
-  let placeRank: Int
-  let importance: Double
-  let addresstype: String
-  let name, displayName: String
-  let boundingbox: [String]
-  
-  enum CodingKeys: String, CodingKey {
-    case placeID = "place_id"
-    case licence
-    case osmType = "osm_type"
-    case osmID = "osm_id"
-    case lat, lon
-    case cityClass = "class"
-    case type
-    case placeRank = "place_rank"
-    case importance, addresstype, name
-    case displayName = "display_name"
-    case boundingbox
-  }
-}
 // MARK: - WeatherNow
 struct WeatherNow: Decodable {
   let coord: Coord?
@@ -189,37 +162,27 @@ enum MainEnum: String, Codable {
 }
 
 
-//MARK: - Model
-struct CityCoordinates: Equatable {
-  var name: String
-  var lat: String
-  var lon: String
-}
-
 protocol CitiesCoordinatesModelProtocol {
-  func loadCitiesCoordinatesFromStorage(coordinates: [CityCoordinates])
-  func getAllCitiesCoordinates() -> [CityCoordinates]
+  func loadCitiesCoordinatesFromStorage(coordinates: [SharedCityCoordinates])
+  func getAllCitiesCoordinates() -> [SharedCityCoordinates]
   func addCityCoordinatesToArray(_ cityElement: CityElement, completion: @escaping () -> Void)
   func deleteCityCoordinates(_ index: Int)
 }
 
 final class CitiesCoordinatesModel: CitiesCoordinatesModelProtocol {
-  private var coordinates: [CityCoordinates] = []
+  private var coordinates: [SharedCityCoordinates] = []
+
   
-  private init() {}
-  
-  static let shared = CitiesCoordinatesModel()
-  
-  func loadCitiesCoordinatesFromStorage(coordinates: [CityCoordinates]) {
+  func loadCitiesCoordinatesFromStorage(coordinates: [SharedCityCoordinates]) {
     self.coordinates = coordinates
   }
   
-  func getAllCitiesCoordinates() -> [CityCoordinates] {
+  func getAllCitiesCoordinates() -> [SharedCityCoordinates] {
     coordinates
   }
   
   func addCityCoordinatesToArray(_ cityElement: CityElement, completion: @escaping () -> Void) {
-      coordinates.append(CityCoordinates(name: cityElement.name, lat: cityElement.lat, lon: cityElement.lon))
+      coordinates.append(SharedCityCoordinates(name: cityElement.name, lat: cityElement.lat, lon: cityElement.lon))
       completion()
   }
   
