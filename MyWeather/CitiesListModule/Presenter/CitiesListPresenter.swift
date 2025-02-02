@@ -25,7 +25,7 @@ protocol CitiesListPresenterProtocol {
   func reloadTableViewWithAnimation()
   func showNumberOfCitites() -> Int
   func fetchDataFor(index: Int, backgroundFrame: CGRect, completion: @escaping (ShortCityForecast) -> Void)
-  func goToCityPageView(pageToShow: Int)
+  func goToCityControl(pageToShow: Int)
   func deleteCity(index: Int)
 }
 
@@ -114,7 +114,7 @@ class CitiesListPresenter: CitiesListPresenterProtocol {
     }
   }
   
-  func goToCityPageView(pageToShow: Int) {
+  func goToCityControl(pageToShow: Int) {
     router.moveToCityPageControl(pageToShow: pageToShow)
   }
   

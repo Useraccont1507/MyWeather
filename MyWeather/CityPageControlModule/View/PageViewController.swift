@@ -9,7 +9,7 @@ import UIKit
 
 class PageViewController: UIPageViewController {
   
-  private var presenter: CityForecastPresenter?
+  private var presenter: CityPageControlPresenter?
   private let pageControl = UIPageControl()
   private let moveToListButton = UIButton()
   
@@ -64,7 +64,7 @@ class PageViewController: UIPageViewController {
 
 extension PageViewController: CityViewControlProtocol {
   
-  func setPresenter(presenter: CityForecastPresenter) {
+  func setPresenter(presenter: CityPageControlPresenter) {
     self.presenter = presenter
   }
   

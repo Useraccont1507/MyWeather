@@ -8,7 +8,7 @@
 import UIKit
 
 protocol CityViewProtocol: AnyObject {
-  func setPresenter(presenter: CityViewPresenterProtocol)
+  func setPresenter(presenter: CityPagePresenterProtocol)
   func handleNetworkChange(isConnected: Bool)
   func prepareDataForView(
     background: CAGradientLayer?,
@@ -34,34 +34,34 @@ protocol CityViewProtocol: AnyObject {
   )
 }
 
-protocol CityViewPresenterProtocol {
-  func startNetworkMonitor()
+protocol CityPagePresenterProtocol {
   func fetchForecastNow(viewFrame: CGRect)
   func fetchForecastHourly(completion: @escaping () -> Void)
 }
 
-class CityViewPresenter: CityViewPresenterProtocol {
+class CityPagePresenter: CityPagePresenterProtocol {
   weak var view: CityViewProtocol?
   var city: SharedCityCoordinates
   var webManager: WebManagerProtocol
-  var backgroundManager: BackgroundManager
+  var backgroundManager: BackgroundManagerProtocol
   var viewSize: CGRect
   private var timeZone: TimeZone?
   
-  init(view: CityViewProtocol, city: SharedCityCoordinates, webManager: WebManagerProtocol, backgroundManager: BackgroundManager, viewSize: CGRect) {
+  init(view: CityViewProtocol, city: SharedCityCoordinates, webManager: WebManagerProtocol, backgroundManager: BackgroundManagerProtocol, viewSize: CGRect) {
     self.view = view
     self.view?.startLoadingView()
     self.city = city
     self.webManager = webManager
     self.backgroundManager = backgroundManager
     self.viewSize = viewSize
+    startNetworkMonitor()
     fetchForecastNow(viewFrame: viewSize)
     fetchForecastHourly {
       view.reloadCollectionView()
     }
   }
   
-  func startNetworkMonitor() {
+  private func startNetworkMonitor() {
     NetworkMonitor.shared.onStatusChange = { [weak self] isConnected in
       self?.view?.handleNetworkChange(isConnected: isConnected)
     }

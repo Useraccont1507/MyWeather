@@ -9,7 +9,7 @@ import UIKit
 
 class CityViewController: UIViewController {
   
-  private var presenter: CityViewPresenterProtocol?
+  private var presenter: CityPagePresenterProtocol?
   
   private var loadingView: LoadingView?
   private let scrollView = UIScrollView()
@@ -187,7 +187,7 @@ extension CityViewController: CityViewProtocol {
   }
   
   
-  func setPresenter(presenter: any CityViewPresenterProtocol) {
+  func setPresenter(presenter: any CityPagePresenterProtocol) {
     self.presenter = presenter
   }
   

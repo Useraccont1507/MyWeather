@@ -69,12 +69,10 @@ class AssemblyBuilder: AssemblyBuilderProtocol {
   
   func buildCityPageControlModule(router: any RouterProtocol, pageToShow: Int) -> UIViewController {
     let view = PageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal)
-    let presenter = CityForecastPresenter(
+    let presenter = CityPageControlPresenter(
       router: router,
       view: view,
-      webManager: webManager,
       citiesCoordinatesModel: citiesCoordiantesModel,
-      backgroundManager: backgroundManager,
       pageindex: pageToShow
     )
     view.setPresenter(presenter: presenter)
@@ -83,7 +81,7 @@ class AssemblyBuilder: AssemblyBuilderProtocol {
   
   func buildCityPage(city: SharedCityCoordinates) -> UIViewController {
     let view = CityViewController()
-    let presenter = CityViewPresenter(
+    let presenter = CityPagePresenter(
       view: view,
       city: city,
       webManager: webManager,

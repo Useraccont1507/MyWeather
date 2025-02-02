@@ -8,7 +8,7 @@
 import UIKit
 
 protocol CityViewControlProtocol: AnyObject {
-  func setPresenter(presenter: CityForecastPresenter)
+  func setPresenter(presenter: CityPageControlPresenter)
   func preparePageControl(initialPage: UIViewController?, numberOfPages: Int, currentPage: Int)
   func changeCurrentPage(pages: [UIViewController], direction: UIPageViewController.NavigationDirection)
 }
@@ -24,21 +24,17 @@ protocol CityPageControlPresenterProtocol {
   func changePageIndex(index: Int)
 }
 
-class CityForecastPresenter: CityPageControlPresenterProtocol {
+class CityPageControlPresenter: CityPageControlPresenterProtocol {
   private let router: RouterProtocol
   private weak var view: CityViewControlProtocol?
-  private var webManager: WebManagerProtocol
-  private var backgroundManager: BackgroundManagerProtocol
   private var citiesCoordinatesModel: CitiesCoordinatesModelProtocol
   private var pages: [UIViewController] = []
   private var pageIndex: Int
   
-  init(router: RouterProtocol, view: CityViewControlProtocol, webManager: WebManagerProtocol, citiesCoordinatesModel: CitiesCoordinatesModelProtocol, backgroundManager: BackgroundManagerProtocol, pageindex: Int) {
+  init(router: RouterProtocol, view: CityViewControlProtocol, citiesCoordinatesModel: CitiesCoordinatesModelProtocol, pageindex: Int) {
     self.router = router
     self.view = view
-    self.webManager = webManager
     self.citiesCoordinatesModel = citiesCoordinatesModel
-    self.backgroundManager = backgroundManager
     self.pageIndex = pageindex
     configurePages()
     view.preparePageControl(initialPage: calculateInitialPage(index: pageindex), numberOfPages: pages.count, currentPage: pageindex)

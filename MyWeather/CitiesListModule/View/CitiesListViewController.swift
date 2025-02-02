@@ -170,7 +170,7 @@ extension CitiesListViewController: UITableViewDelegate {
   }
   
   func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-    presenter?.goToCityPageView(pageToShow: indexPath.row)
+    presenter?.goToCityControl(pageToShow: indexPath.row)
   }
   
   func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
