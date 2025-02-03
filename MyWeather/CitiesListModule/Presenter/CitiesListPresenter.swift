@@ -35,15 +35,15 @@ class CitiesListPresenter: CitiesListPresenterProtocol {
   private var webManager: WebManagerProtocol
   private var storage: StorageProtocol
   private var backgroundManager: BackgroundManagerProtocol
-  private var citiesCoordinatesModel: CitiesCoordinatesModelProtocol
+  private var citiesFromStorage: [SharedCityCoordinates]!
   
-  init(router: RouterProtocol, view: CitiesListViewProtocol, webManager: WebManagerProtocol, storage: StorageProtocol, citiesCoordinatesModel: CitiesCoordinatesModelProtocol, backgroundManager: BackgroundManagerProtocol) {
+  init(router: RouterProtocol, view: CitiesListViewProtocol, webManager: WebManagerProtocol, storage: StorageProtocol, backgroundManager: BackgroundManagerProtocol) {
     self.router = router
     self.view = view
     self.webManager = webManager
     self.storage = storage
-    self.citiesCoordinatesModel = citiesCoordinatesModel
     self.backgroundManager = backgroundManager
+    self.citiesFromStorage = storage.loadCityCoordinates()
     startNetworkMonitor()
   }
   
@@ -82,11 +82,11 @@ class CitiesListPresenter: CitiesListPresenterProtocol {
   }
   
   func showNumberOfCitites() -> Int {
-    return citiesCoordinatesModel.getAllCitiesCoordinates().count
+    return citiesFromStorage.count
   }
   
   func fetchDataFor(index: Int, backgroundFrame: CGRect, completion: @escaping (ShortCityForecast) -> Void) {
-    let coordinates = citiesCoordinatesModel.getAllCitiesCoordinates()[index]
+    let coordinates = citiesFromStorage[index]
     var resultToReturn: ShortCityForecast = ShortCityForecast(
       cityName: nil,
       tempLabelText: nil,
@@ -119,8 +119,8 @@ class CitiesListPresenter: CitiesListPresenterProtocol {
   }
   
   func deleteCity(index: Int) {
-    citiesCoordinatesModel.deleteCityCoordinates(index)
+    citiesFromStorage.remove(at: index)
     view?.deleteRowAt(index: index)
-    storage.saveCityCoordinates(citiesCoordinatesModel.getAllCitiesCoordinates())
+    storage.saveCityCoordinates(citiesFromStorage)
   }
 }

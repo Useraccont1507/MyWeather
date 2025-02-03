@@ -28,14 +28,12 @@ class SearchCityViewPresenter: SearchCityViewPresenterProtocol {
   private var webManager: WebManagerProtocol?
   private var storage: StorageProtocol
   private var cityData: [CityElement] = []
-  private var citiesCoordinatesModel: CitiesCoordinatesModelProtocol
   
-  init(view: SearchCityViewProtocol, router: RouterProtocol, webManager: WebManagerProtocol, storage: StorageProtocol, citiesCoordinatesModel: CitiesCoordinatesModelProtocol) {
+  init(view: SearchCityViewProtocol, router: RouterProtocol, webManager: WebManagerProtocol, storage: StorageProtocol) {
     self.view = view
     self.router = router
     self.webManager = webManager
     self.storage = storage
-    self.citiesCoordinatesModel = citiesCoordinatesModel
   }
   
   func searchTextDidChange(text: String?) {
@@ -77,10 +75,8 @@ class SearchCityViewPresenter: SearchCityViewPresenterProtocol {
   }
   
   private func addCity(index: Int) {
-    citiesCoordinatesModel.addCityCoordinatesToArray(self.cityData[index]) { [weak self] in
-      guard let self = self else { return }
-      self.storage.saveCityCoordinates(self.citiesCoordinatesModel.getAllCitiesCoordinates())
-    }
+    let arrayToSave = [SharedCityCoordinates(name: cityData[index].name, lat: cityData[index].lat, lon: cityData[index].lon)]
+    self.storage.saveCityCoordinates(arrayToSave)
     self.router.moveToCitiesListView()
   }
   

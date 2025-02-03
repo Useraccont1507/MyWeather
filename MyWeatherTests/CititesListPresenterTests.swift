@@ -41,7 +41,6 @@ class CitiesListPresenterTests: XCTestCase {
   var webManager: MockWebManager!
   var storage: MockStorage!
   var backgroundManager: MockBackgroundManager!
-  var citiesCoordinatesModel: MockCitiesCoordinatesModel!
   var presenter: CitiesListPresenterProtocol!
   
   override func setUpWithError() throws {
@@ -50,13 +49,11 @@ class CitiesListPresenterTests: XCTestCase {
     webManager = MockWebManager()
     storage = MockStorage()
     backgroundManager = MockBackgroundManager()
-    citiesCoordinatesModel = MockCitiesCoordinatesModel()
     presenter = CitiesListPresenter(
       router: router,
       view: view,
       webManager: webManager,
       storage: storage,
-      citiesCoordinatesModel: citiesCoordinatesModel,
       backgroundManager: backgroundManager
     )
   }
@@ -67,7 +64,6 @@ class CitiesListPresenterTests: XCTestCase {
     webManager = nil
     storage = nil
     backgroundManager = nil
-    citiesCoordinatesModel = nil
     presenter = nil
   }
   
@@ -77,7 +73,7 @@ class CitiesListPresenterTests: XCTestCase {
   }
   
   func testNumberOfCities() {
-    XCTAssertEqual(citiesCoordinatesModel.getAllCitiesCoordinates().count, presenter.showNumberOfCitites())
+    XCTAssertEqual(storage.loadCityCoordinates().count, presenter.showNumberOfCitites())
   }
   
   func testEditingMode() {
@@ -97,7 +93,7 @@ class CitiesListPresenterTests: XCTestCase {
   
   func testDeleteCity() {
     presenter.deleteCity(index: 0)
-    XCTAssertTrue(citiesCoordinatesModel.isDeleteCalled)
+    XCTAssertTrue(storage.isSaveCalled)
   }
   
   func testFetchingCalled() {

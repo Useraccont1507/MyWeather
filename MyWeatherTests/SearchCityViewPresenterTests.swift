@@ -32,15 +32,13 @@ final class SearchCityViewPresenterTests: XCTestCase {
   var presenter: SearchCityViewPresenter!
   var storage: MockStorage!
   var webManager: MockWebManager!
-  var citiesCooordinatesModel: MockCitiesCoordinatesModel!
   
   override func setUpWithError() throws {
     view = MockSearchView()
     router = MockRouter(navigationController: UINavigationController(), assemblyBuilder: AssemblyBuilder())
     webManager = MockWebManager()
     storage = MockStorage()
-    citiesCooordinatesModel = MockCitiesCoordinatesModel()
-    presenter = SearchCityViewPresenter(view: view, router: router, webManager: webManager, storage: storage, citiesCoordinatesModel: citiesCooordinatesModel)
+    presenter = SearchCityViewPresenter(view: view, router: router, webManager: webManager, storage: storage)
   }
   
   override func tearDownWithError() throws {
@@ -48,7 +46,6 @@ final class SearchCityViewPresenterTests: XCTestCase {
     router = nil
     webManager = nil
     storage = nil
-    citiesCooordinatesModel = nil
     presenter = nil
   }
   
@@ -75,7 +72,6 @@ final class SearchCityViewPresenterTests: XCTestCase {
       actionHandler(UIAlertAction())
     }
     
-    XCTAssertTrue(citiesCooordinatesModel.isAddingCalled, "adding to model wasn't called")
     
     XCTAssertTrue(router.isCallMoveToCitiesList, "move to cities list wasn't called")
     XCTAssertTrue(router.isCallDismissSearchView, "dismiss searchView wasn't called")

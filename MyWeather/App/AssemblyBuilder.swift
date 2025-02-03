@@ -18,12 +18,7 @@ protocol AssemblyBuilderProtocol {
 class AssemblyBuilder: AssemblyBuilderProtocol {
   private var webManager = WebManager()
   private var storage = Storage()
-  private var citiesCoordiantesModel = CitiesCoordinatesModel()
   private var backgroundManager = BackgroundManager()
-  
-  init() {
-    citiesCoordiantesModel.loadCitiesCoordinatesFromStorage(coordinates: storage.loadCityCoordinates())
-  }
   
   func buildInitialView(router: RouterProtocol) -> UIViewController {
     if storage.isFirstEnter() {
@@ -46,8 +41,7 @@ class AssemblyBuilder: AssemblyBuilderProtocol {
       view: view,
       router: router,
       webManager: webManager,
-      storage: storage,
-      citiesCoordinatesModel: citiesCoordiantesModel
+      storage: storage
     )
     view.setPresenter(presenter: presenter)
     return view
@@ -60,7 +54,6 @@ class AssemblyBuilder: AssemblyBuilderProtocol {
       view: view,
       webManager: webManager,
       storage: storage,
-      citiesCoordinatesModel: citiesCoordiantesModel,
       backgroundManager: backgroundManager
     )
     view.setPresenter(presenter: presenter)
@@ -72,7 +65,7 @@ class AssemblyBuilder: AssemblyBuilderProtocol {
     let presenter = CityPageControlPresenter(
       router: router,
       view: view,
-      citiesCoordinatesModel: citiesCoordiantesModel,
+      storage: storage,
       pageindex: pageToShow
     )
     view.setPresenter(presenter: presenter)

@@ -160,33 +160,3 @@ enum MainEnum: String, Codable {
     case rain = "Rain"
     case snow = "Snow"
 }
-
-
-protocol CitiesCoordinatesModelProtocol {
-  func loadCitiesCoordinatesFromStorage(coordinates: [SharedCityCoordinates])
-  func getAllCitiesCoordinates() -> [SharedCityCoordinates]
-  func addCityCoordinatesToArray(_ cityElement: CityElement, completion: @escaping () -> Void)
-  func deleteCityCoordinates(_ index: Int)
-}
-
-final class CitiesCoordinatesModel: CitiesCoordinatesModelProtocol {
-  private var coordinates: [SharedCityCoordinates] = []
-
-  
-  func loadCitiesCoordinatesFromStorage(coordinates: [SharedCityCoordinates]) {
-    self.coordinates = coordinates
-  }
-  
-  func getAllCitiesCoordinates() -> [SharedCityCoordinates] {
-    coordinates
-  }
-  
-  func addCityCoordinatesToArray(_ cityElement: CityElement, completion: @escaping () -> Void) {
-      coordinates.append(SharedCityCoordinates(name: cityElement.name, lat: cityElement.lat, lon: cityElement.lon))
-      completion()
-  }
-  
-  func deleteCityCoordinates(_ index: Int) {
-    coordinates.remove(at: index)
-  }
-}

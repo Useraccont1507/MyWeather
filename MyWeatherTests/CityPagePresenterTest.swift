@@ -47,19 +47,19 @@ class CityPagePresenterTest: XCTestCase {
   var view: MockCityPageView!
   var presenter: CityPagePresenterProtocol!
   var webManager: MockWebManager!
-  var citiesCoordinatesModel: MockCitiesCoordinatesModel!
   var backgroundManager: MockBackgroundManager!
+  var storage: MockStorage!
   
   
   override func setUpWithError() throws {
     router = MockRouter(navigationController: UINavigationController(), assemblyBuilder: AssemblyBuilder())
     view = MockCityPageView()
     webManager = MockWebManager()
-    citiesCoordinatesModel = MockCitiesCoordinatesModel()
     backgroundManager = MockBackgroundManager()
+    storage = MockStorage()
     presenter = CityPagePresenter(
       view: view,
-      city: citiesCoordinatesModel.getAllCitiesCoordinates().first!,
+      city: storage.loadCityCoordinates().first!,
       webManager: webManager,
       backgroundManager: backgroundManager,
       viewSize: CGRect()
@@ -70,7 +70,6 @@ class CityPagePresenterTest: XCTestCase {
     router = nil
     view = nil
     presenter = nil
-    citiesCoordinatesModel = nil
     webManager = nil
     backgroundManager = nil
   }

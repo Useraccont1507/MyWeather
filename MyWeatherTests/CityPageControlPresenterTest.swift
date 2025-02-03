@@ -24,7 +24,7 @@ class CityPageControlPresenterTest: XCTestCase {
   var view: MockCityControlView!
   var presenter: CityPageControlPresenterProtocol!
   var webManager: MockWebManager!
-  var citiesCoordinatesModel: MockCitiesCoordinatesModel!
+  var storage: MockStorage!
   var backgroundManager: MockBackgroundManager!
   
   
@@ -32,12 +32,12 @@ class CityPageControlPresenterTest: XCTestCase {
     router = MockRouter(navigationController: UINavigationController(), assemblyBuilder: AssemblyBuilder())
     view = MockCityControlView()
     webManager = MockWebManager()
-    citiesCoordinatesModel = MockCitiesCoordinatesModel()
     backgroundManager = MockBackgroundManager()
+    storage = MockStorage()
     presenter = CityPageControlPresenter(
       router: router,
       view: view,
-      citiesCoordinatesModel: citiesCoordinatesModel,
+      storage: storage,
       pageindex: 1
     )
   }
@@ -45,7 +45,6 @@ class CityPageControlPresenterTest: XCTestCase {
   override func tearDownWithError() throws {
     router = nil
     view = nil
-    citiesCoordinatesModel = nil
     presenter = nil
     webManager = nil
     backgroundManager = nil

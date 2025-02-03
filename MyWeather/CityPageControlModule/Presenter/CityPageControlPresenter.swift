@@ -27,21 +27,21 @@ protocol CityPageControlPresenterProtocol {
 class CityPageControlPresenter: CityPageControlPresenterProtocol {
   private let router: RouterProtocol
   private weak var view: CityViewControlProtocol?
-  private var citiesCoordinatesModel: CitiesCoordinatesModelProtocol
+  private var storage: StorageProtocol
   private var pages: [UIViewController] = []
   private var pageIndex: Int
   
-  init(router: RouterProtocol, view: CityViewControlProtocol, citiesCoordinatesModel: CitiesCoordinatesModelProtocol, pageindex: Int) {
+  init(router: RouterProtocol, view: CityViewControlProtocol, storage: StorageProtocol, pageindex: Int) {
     self.router = router
     self.view = view
-    self.citiesCoordinatesModel = citiesCoordinatesModel
     self.pageIndex = pageindex
+    self.storage = storage
     configurePages()
     view.preparePageControl(initialPage: calculateInitialPage(index: pageindex), numberOfPages: pages.count, currentPage: pageindex)
   }
   
   private func configurePages() {
-    let cities = citiesCoordinatesModel.getAllCitiesCoordinates()
+    let cities = storage.loadCityCoordinates()
     cities.forEach { city in
       let view = router.showCityPage(city: city)
       pages.append(view)

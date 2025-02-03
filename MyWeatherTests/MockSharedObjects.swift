@@ -102,34 +102,10 @@ class MockWebManager: WebManagerProtocol {
   }
 }
 
-class MockCitiesCoordinatesModel: CitiesCoordinatesModelProtocol {
-  var isAddingCalled = false
-  var isDeleteCalled = false
-  
-  private var cities: [MyWeather.SharedCityCoordinates] = [SharedCityCoordinates(name: "kyiv", lat: "50.342", lon: "32.45")]
-  
-  func loadCitiesCoordinatesFromStorage(coordinates: [MyWeather.SharedCityCoordinates]) {
-    
-  }
-  
-  func getAllCitiesCoordinates() -> [MyWeather.SharedCityCoordinates] {
-    cities
-  }
-  
-  func addCityCoordinatesToArray(_ cityElement: MyWeather.CityElement, completion: @escaping () -> Void) {
-    isAddingCalled = true
-    self.cities.append(SharedCityCoordinates(name: cityElement.name, lat: cityElement.lat, lon: cityElement.lon))
-  }
-  
-  func deleteCityCoordinates(_ index: Int) {
-    isDeleteCalled = true
-  }
-}
-
 class MockStorage: StorageProtocol {
   var isSaveCalled = false
   
-  private var cities: [MyWeather.SharedCityCoordinates] = []
+  private var cities: [MyWeather.SharedCityCoordinates] = [SharedCityCoordinates(name: "bar", lat: "bar", lon: "bar")]
   
   func isFirstEnter() -> Bool {
     true

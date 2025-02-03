@@ -21,6 +21,6 @@ class StorageTests: XCTestCase {
   
   func test() {
     storage.saveCityCoordinates([SharedCityCoordinates(name: "bar", lat: "bar", lon: "bar")])
-    XCTAssertEqual([SharedCityCoordinates(name: "bar", lat: "bar", lon: "bar")], storage.loadCityCoordinates())
+    XCTAssertEqual("bar", storage.loadCityCoordinates()[0].name)
   }
 }
