@@ -31,25 +31,27 @@ final class Storage: StorageProtocol {
   }
   
   func saveCityCoordinates(_ citiesCoordinates: [SharedCityCoordinates]) {
-    var arrayToSave: [[String: String]] = []
-    for citiesCoordinate in citiesCoordinates {
-      var dict: [String: String] = [:]
-      dict["name"] = citiesCoordinate.name
-      dict["lat"] = citiesCoordinate.lat
-      dict["lon"] = citiesCoordinate.lon
-      arrayToSave.append(dict)
+    do {
+      let data = try JSONEncoder().encode(citiesCoordinates)
+      storage.set(data, forKey: Keys.cityCoordinates.rawValue)
+    } catch {
+      print("encoding error form storage")
     }
-    storage.set(arrayToSave, forKey: Keys.cityCoordinates.rawValue)
   }
   
   func loadCityCoordinates() -> [SharedCityCoordinates] {
-    guard let arrayFromStorage = storage.array(forKey: Keys.cityCoordinates.rawValue) as? [[String: String]] else { return [] }
-    var arrayToReturn: [SharedCityCoordinates] = []
-    for dict in arrayFromStorage {
-      if let name = dict["name"], let lat = dict["lat"], let lon = dict["lon"] {
-        arrayToReturn.append(SharedCityCoordinates(name: name, lat: lat, lon: lon))
-      }
+    guard let dataFromStorage = storage.data(forKey: Keys.cityCoordinates.rawValue) else {
+      let arrayToReturn: [SharedCityCoordinates] = []
+      return arrayToReturn
     }
-    return arrayToReturn
+    
+    do {
+      let array = try JSONDecoder().decode([SharedCityCoordinates].self, from: dataFromStorage)
+      return array
+    } catch {
+      print("decoding error form storage")
+      let arrayToReturn: [SharedCityCoordinates] = []
+      return arrayToReturn
+    }
   }
 }

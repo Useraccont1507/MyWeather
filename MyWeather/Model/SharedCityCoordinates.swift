@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct SharedCityCoordinates: Equatable {
+struct SharedCityCoordinates: Codable {
   var name: String
   var lat: String
   var lon: String
