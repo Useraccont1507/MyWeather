@@ -49,7 +49,7 @@ The app supports **English** and **Ukrainian** localizations.
 ## 🚀 Instalation
 Clone repo:
    ```bash
-   git clone https://github.com/Useraccont1507/MyReminder.git
+   git clone https://github.com/Useraccont1507/MyWeather.git
 ```
 
 
